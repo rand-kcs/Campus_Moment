@@ -1,0 +1,3825 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园生活交友平台</title>
+    <!-- 引入Font Awesome图标库，用于点赞、评论等小图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        :root {
+            /* 替换为主色调：蓝色系 */
+            --primary: #4e73df;
+            --secondary: #6f42c1; /* 辅助色调 */
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --warning: #f6c23e;
+            --danger: #e74a3b;
+
+            /* 背景和文本色调 */
+            --light: #f8f9fc; /* 浅色背景（如卡片、模态框） */
+            --dark: #5a5c69; /* 深色文本/图标（亮色模式下） */
+            --text: #3a3b45; /* 主要文本颜色 */
+            --border: #e3e6f0; /* 边框颜色 */
+            --bg-light: #f0f2f5; /* 页面背景色（亮色模式下） - 稍微调整使其更接近原图的灰白 */
+
+            /* 阴影 */
+            --card-shadow: 0 0.15rem 1.75rem rgba(58, 59, 69, 0.15);
+
+            /* 链接颜色保持为主色调 */
+            --link-color: var(--primary);
+        }
+
+        /* 暗黑模式样式 */
+        body.dark-mode {
+            background-color: #1a202c; /* 更深的背景色 */
+            color: #e2e8f0; /* 浅色文本 */
+
+            --light: #2d3748; /* 暗色模式下卡片、模态框的背景 */
+            --dark: #e2e8f0; /* 暗色模式下浅色文本/图标 */
+            --text: #e2e8f0; /* 暗色模式下主要文本颜色 */
+            --border: #4a5568; /* 暗色模式下边框颜色 */
+            --bg-light: #1a202c; /* 暗色模式下页面背景色 */
+            --card-shadow: 0 0.15rem 1.75rem rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 更改字体 */
+            background-color: var(--bg-light);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* 通用容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* 头部导航 */
+        header {
+            background-color: var(--light);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin-left: 25px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .nav-menu a:hover, .nav-menu a.active {
+            color: var(--primary);
+            background-color: rgba(78, 115, 223, 0.1);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .search-box input {
+            padding: 8px 15px 8px 35px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background-color: var(--bg-light);
+            color: var(--text);
+            width: 200px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark);
+        }
+
+        .theme-toggle, .user-avatar-nav { /* user-avatar-nav for differentiation */
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-light); /* Adjusted from --light for better contrast */
+            color: var(--dark);
+            cursor: pointer;
+            margin-left: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border); /* Added border */
+        }
+
+        .user-avatar-nav img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+        /* 主要内容区布局 */
+        .main-grid-content { /* Renamed from .main-content to avoid conflict */
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 25px;
+            padding: 30px 0;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--primary);
+        }
+
+        .trending-topics li {
+            margin-bottom: 10px;
+            list-style: none;
+        }
+
+        .trending-topics a {
+            text-decoration: none;
+            color: var(--info);
+            display: flex;
+            align-items: center;
+        }
+
+        .trending-topics a:hover {
+            color: var(--primary);
+        }
+
+        .trending-topics i {
+            margin-right: 8px;
+        }
+
+        .friend-suggestions .friend {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .friend:last-child {
+            border-bottom: none;
+        }
+
+        .friend img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .friend .name {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .friend .major {
+            font-size: 12px;
+            color: var(--dark);
+        }
+
+        .friend .follow-btn {
+            margin-left: auto;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .friend .follow-btn:hover {
+            background-color: #3f66c9;
+        }
+        .friend .follow-btn.unfollow {
+            background-color: #6c757d; /* 已关注的颜色 */
+        }
+        .friend .follow-btn.unfollow:hover {
+            background-color: #5a6268;
+        }
+
+
+        /* 动态流容器 */
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feed-header {
+            display: flex;
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 15px;
+        }
+
+        .feed-tabs {
+            display: flex;
+            gap: 15px;
+        }
+
+        .feed-tab {
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--dark);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .feed-tab:hover {
+            background-color: rgba(78, 115, 223, 0.1);
+            color: var(--primary);
+        }
+
+        .feed-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .new-post-btn {
+            margin-left: auto;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.3s ease;
+        }
+
+        .new-post-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* 动态卡片 */
+        .post { /* Renamed from .post-card */
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .post:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .post-header img { /* User avatar in post */
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            border: 2px solid var(--primary); /* Added border */
+        }
+
+        .post-user-info .name {
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: var(--primary);
+        }
+
+        .post-user-info .time {
+            font-size: 13px;
+            color: var(--dark);
+        }
+
+        .post-menu {
+            margin-left: auto;
+            position: relative;
+        }
+
+        .post-menu-btn {
+            background: none;
+            border: none;
+            color: var(--dark);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+        }
+        .post-menu-btn:hover {
+            background-color: var(--bg-light);
+        }
+
+        .post-menu-dropdown {
+            position: absolute;
+            right: 0;
+            top: 25px;
+            background-color: var(--light);
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            min-width: 120px;
+            z-index: 10;
+            display: none;
+        }
+
+        .post-menu-dropdown.show {
+            display: block;
+        }
+
+        .post-menu-dropdown button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 8px 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .post-menu-dropdown button:hover {
+            background-color: var(--bg-light);
+        }
+
+        .post-content-area { /* New wrapper for text and images to make it clickable */
+            cursor: pointer;
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .post-tag {
+            background-color: rgba(78, 115, 223, 0.1);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .post-images-grid { /* Renamed from .post-images */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .post-images-grid img { /* Renamed from .post-images img */
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            border: 1px solid var(--border); /* Added border */
+        }
+
+        .post-images-grid img:hover {
+            transform: scale(1.02);
+        }
+
+        .post-stats {
+            display: flex;
+            color: var(--dark);
+            font-size: 14px;
+            padding: 10px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 15px;
+        }
+
+        .post-stats span {
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--dark);
+            transition: all 0.3s;
+        }
+
+        .post-action:hover {
+            background-color: var(--bg-light);
+            color: var(--primary);
+        }
+
+        .post-action.active { /* For liked state */
+            color: var(--primary);
+        }
+        .post-action.active i {
+            color: var(--danger); /* Red heart for liked */
+        }
+        .post-action.delete-btn { /* For delete button */
+            color: var(--danger);
+        }
+        .post-action.delete-btn:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+
+        /* 评论部分 */
+        .comments-section { /* Renamed from .comments */
+            margin-top: 15px;
+            /* display: none; Removed, as we're showing preview and controlling full list via JS */
+        }
+
+        /* 评论输入框样式 - 首页 */
+        .comments-section .add-comment-area {
+            display: flex;
+            margin-top: 15px; /* Default margin below stats, before preview */
+            margin-bottom: 15px;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        /* Specific styling for when in detail modal to place it at the top */
+        #post-detail-content .add-comment-area {
+            margin-top: 0;
+            padding-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+        }
+
+
+        .comments-section.hidden-full-list .comment-list {
+            display: none; /* Hide full list of comments when not expanded */
+        }
+        /* When not expanded, also hide add comment area from main feed, it's only shown when "评论" is clicked */
+        .comments-section.hidden-full-list .add-comment-area {
+            display: none;
+        }
+
+        .comments-preview {
+            /* border-top: 1px solid var(--border); Removed, now border is on add-comment-area */
+            margin-top: 15px;
+            padding-top: 15px;
+        }
+        .comments-preview h4 {
+            font-size: 15px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .comment-item { /* Renamed from .comment */
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .comment-item img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .comment-content-bubble { /* Renamed from .comment-content */
+            background-color: var(--bg-light);
+            border-radius: 18px;
+            padding: 10px 15px;
+            flex: 1;
+        }
+
+        .comment-header-info { /* Renamed from .comment-header */
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Align items vertically */
+            margin-bottom: 5px;
+        }
+
+        .comment-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--primary);
+            margin-right: 8px; /* Space between name and time/actions */
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: var(--dark);
+        }
+        .comment-meta-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            margin-bottom: 5px; /* Space above actions */
+        }
+
+        .comment-actions-inline { /* Renamed from .comment-actions */
+            display: flex;
+            gap: 15px;
+            /* margin-top: 8px; Removed, incorporated into header-info or bubble itself */
+            font-size: 13px;
+        }
+
+        .comment-actions-inline button {
+            background: none;
+            border: none;
+            color: var(--dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s ease;
+        }
+        .comment-actions-inline button.active {
+            color: var(--primary);
+        }
+        .comment-actions-inline button.active i {
+            color: var(--danger);
+        }
+
+
+        .comment-actions-inline button:hover {
+            color: var(--primary);
+        }
+        .view-all-comments-link {
+            font-size: 14px;
+            color: var(--primary);
+            text-align: right;
+            display: block;
+            margin-top: 10px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+
+        .add-comment-area { /* Renamed from .add-comment */
+            display: flex;
+            gap: 10px;
+        }
+
+
+        .add-comment-area img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border);
+        }
+
+        .comment-input-wrapper { /* Renamed from .comment-input */
+            flex: 1;
+            display: flex;
+            background-color: var(--bg-light);
+            border-radius: 20px;
+            padding: 8px 15px;
+        }
+
+        .comment-input-wrapper input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text);
+        }
+
+        .comment-input-wrapper button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* 热门推荐侧边栏 (adapted from hot-topics in reference) */
+        .hot-posts-sidebar-section { /* Renamed from .hot-topics */
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-top: 25px; /* Add margin to separate from other sidebar content */
+        }
+        .hot-posts-sidebar-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--primary);
+        }
+        .hot-post-item { /* Adapted existing hot-post-item class */
+            display: flex;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid var(--border); /* Mimic topic divider */
+        }
+        .hot-post-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .hot-post-item .topic-number { /* Number style from reference */
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--info);
+            margin-right: 15px;
+        }
+        .hot-post-item .topic-info { /* Info style from reference */
+            flex: 1;
+        }
+        .hot-post-item .title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+        .hot-post-item .topic-stats {
+            font-size: 13px;
+            color: var(--dark);
+        }
+        .hot-post-item:hover {
+            background-color: var(--bg-light);
+            border-radius: 5px;
+        }
+
+
+        /* 模态框 (统一使用) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            top: 0;
+            left: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+            z-index: 2000; /* Sit on top of everything */
+            align-items: center;
+            justify-content: center;
+            animation: fadeInModalBg 0.3s forwards;
+        }
+        @keyframes fadeInModalBg {
+            from { background-color: rgba(0,0,0,0); }
+            to { background-color: rgba(0,0,0,0.5); }
+        }
+
+        .modal-content {
+            background-color: var(--light);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: fadeInModalContent 0.3s ease-out;
+            box-shadow: var(--card-shadow);
+        }
+        @keyframes fadeInModalContent {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text); /* Changed to var(--text) for consistency */
+        }
+
+        .close-btn { /* Renamed from .close-button for consistency with reference */
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--dark);
+            padding: 5px;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+        }
+        .close-btn:hover {
+            background-color: var(--bg-light);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group { /* General form group style for modals */
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .modal input[type="text"],
+        .modal input[type="password"],
+        .modal input[type="email"],
+        .modal textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+            background-color: var(--bg-light); /* Changed for dark mode contrast */
+            color: var(--text);
+        }
+        .modal input[type="file"] {
+            padding: 5px 0;
+            color: var(--text);
+        }
+
+        .modal input[type="text"]:focus,
+        .modal input[type="password"]:focus,
+        .modal input[type="email"]:focus,
+        .modal textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.2);
+        }
+
+        .modal input:valid {
+            border-color: var(--success);
+        }
+
+        .modal input:invalid:not(:placeholder-shown) {
+            border-color: var(--danger);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none; /* Hidden by default */
+        }
+        .modal input:invalid:not(:placeholder-shown) + .error-message {
+            display: block; /* Show error when invalid */
+        }
+
+        .modal button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); /* Gradient button */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal button[type="submit"]:hover {
+            opacity: 0.9;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            width: auto; /* Override modal input width */
+            accent-color: var(--primary); /* Checkbox color */
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle input {
+            padding-right: 40px; /* Make space for icon */
+        }
+
+        .password-toggle .toggle-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%; /* Adjusted for label above input */
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--dark);
+        }
+        /* Adjust for when label is not present */
+        .form-group.password-toggle > .toggle-icon {
+            top: calc(50% + 12px); /* Adjust if label is below or inline */
+        }
+        .form-group.password-toggle label + input + .toggle-icon {
+            top: calc(50% + 19px); /* Approximate center with label above */
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* Profile Page */
+        .profile-page {
+            display: none; /* Hidden by default */
+            background-color: var(--light);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 30px;
+            min-height: 500px; /* Ensure it has some height */
+        }
+
+        .profile-header-section { /* Renamed from .profile-header */
+            display: flex;
+            flex-direction: column; /* Stack on small screens */
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+        @media (min-width: 768px) {
+            .profile-header-section {
+                flex-direction: row; /* Row on larger screens */
+                text-align: left;
+                align-items: flex-start;
+            }
+        }
+
+
+        .profile-avatar {
+            width: 120px; /* Increased size */
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px; /* Space when stacked */
+            border: 4px solid var(--primary); /* Thicker border */
+            box-shadow: 0 0 0 5px rgba(78, 115, 223, 0.1); /* Subtle outer shadow */
+        }
+        @media (min-width: 768px) {
+            .profile-avatar {
+                margin-right: 30px;
+                margin-bottom: 0;
+            }
+        }
+
+        .profile-info {
+            flex-grow: 1; /* Allow info to take remaining space */
+        }
+
+        .profile-info h2 {
+            font-size: 2.2rem; /* Larger font */
+            margin: 0 0 8px 0;
+            color: var(--primary);
+        }
+
+        .profile-info p {
+            font-size: 1rem;
+            color: var(--dark);
+            margin-bottom: 12px;
+        }
+
+        .profile-info .tag-list span {
+            display: inline-block;
+            background-color: var(--info); /* Changed to info for a different look */
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px; /* More rounded */
+            margin-right: 8px;
+            margin-bottom: 5px; /* For wrapping */
+            font-size: 0.85rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: center; /* Center when stacked */
+            gap: 30px; /* More space */
+            margin-top: 20px;
+        }
+        @media (min-width: 768px) {
+            .profile-stats {
+                justify-content: flex-start; /* Align left on larger screens */
+            }
+        }
+
+        .profile-stats div {
+            text-align: center;
+            font-size: 1.1rem;
+            padding: 5px 10px;
+            background-color: var(--bg-light); /* Light background for stats */
+            border-radius: 8px;
+        }
+
+        .profile-stats div strong {
+            display: block;
+            font-size: 1.5rem; /* Slightly larger */
+            color: var(--primary);
+            margin-bottom: 3px;
+        }
+
+        .profile-actions {
+            margin-top: 20px; /* Space when stacked */
+            width: 100%; /* Full width when stacked */
+        }
+        @media (min-width: 768px) {
+            .profile-actions {
+                margin-left: auto;
+                align-self: flex-start;
+                width: auto;
+                margin-top: 0;
+            }
+        }
+
+
+        .profile-actions button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 25px; /* Larger padding */
+            border-radius: 25px; /* More rounded */
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+            width: 100%; /* Full width on small screens */
+            margin-bottom: 10px; /* Stack buttons */
+        }
+
+        .profile-actions button:hover {
+            opacity: 0.9;
+        }
+
+        .profile-actions button.unfollow {
+            background: linear-gradient(135deg, var(--danger), #e67d2e); /* Different gradient for unfollow */
+        }
+        .profile-actions button.unfollow:hover {
+            opacity: 0.9;
+        }
+        @media (min-width: 768px) {
+            .profile-actions button {
+                width: auto;
+                margin-bottom: 0;
+                margin-left: 10px; /* Space between buttons on large screens */
+            }
+        }
+
+
+        .profile-sections {
+            margin-top: 20px;
+        }
+
+        .profile-sections h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        /* Post Publish Modal Content (integrated into general .modal) */
+        .post-form-modal textarea { /* Styles specific to textarea in publish modal */
+            width: 100%;
+            min-height: 150px;
+            border: none;
+            outline: none;
+            resize: vertical;
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: var(--text);
+            background-color: transparent; /* Transparent for modal body background */
+        }
+
+        .post-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .post-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: var(--bg-light);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            color: var(--dark);
+        }
+        .post-option:hover {
+            background-color: rgba(78, 115, 223, 0.1);
+            color: var(--primary);
+        }
+
+        .post-option.active {
+            background-color: var(--info);
+            color: white;
+        }
+
+        .preview-container {
+            margin-bottom: 15px;
+            position: relative;
+            display: none; /* Hidden by default, controlled by JS */
+            border-radius: 10px;
+            overflow: hidden; /* Ensure image corners are rounded */
+        }
+
+        .preview-container.show {
+            display: block;
+        }
+
+        .preview-image {
+            width: 100%;
+            border-radius: 10px; /* Already set by container */
+            max-height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+        .remove-image:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .post-submit-btn { /* Renamed from .post-submit */
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 25px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        .post-submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Message Box (custom alert) */
+        .message-box {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--light);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            z-index: 2002; /* Higher than modals */
+            text-align: center;
+            min-width: 300px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .message-box p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+        .message-box button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        .message-box button:hover {
+            opacity: 0.9;
+        }
+
+        /* Loading indicator for infinite scroll */
+        .loading-indicator {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+            color: var(--dark);
+            display: none; /* Hidden by default */
+        }
+
+        /* Admin Page Styles */
+        .admin-page {
+            display: none;
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 30px;
+        }
+        .admin-page h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+        .user-list {
+            list-style: none;
+            padding: 0;
+        }
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .user-item:last-child {
+            border-bottom: none;
+        }
+        .user-info span {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        .user-item.banned .user-info span {
+            color: var(--danger);
+            text-decoration: line-through;
+        }
+        .user-actions button {
+            margin-left: 10px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+            color: white; /* Default white text */
+            border: none;
+        }
+        .user-actions button:hover {
+            opacity: 0.9;
+        }
+        .user-actions .ban-btn {
+            background-color: var(--danger);
+        }
+        .user-actions .reset-btn {
+            background-color: var(--warning);
+        }
+        .user-actions .unban-btn {
+            background-color: var(--success);
+        }
+
+        /* Private Message (UI Only) */
+        .private-message-page {
+            display: none; /* Hidden by default */
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 30px;
+            height: 600px; /* Fixed height for demo */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .private-message-page h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .chat-window {
+            flex-grow: 1;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: var(--bg-light); /* Adjusted background */
+        }
+
+        .chat-message-bubble { /* Renamed from .chat-message */
+            background-color: var(--primary); /* Light green for sent messages */
+            color: white;
+            align-self: flex-end;
+            padding: 10px 15px;
+            border-radius: 15px 15px 0 15px;
+            max-width: 80%;
+            word-wrap: break-word; /* Ensure long words break */
+        }
+        .chat-message-bubble.received {
+            background-color: var(--info); /* Light grey for received messages */
+            align-self: flex-start;
+            border-radius: 15px 15px 15px 0;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 20px; /* More rounded */
+            outline: none;
+            background-color: var(--bg-light); /* Adjusted background */
+            color: var(--text);
+            transition: border-color 0.3s ease;
+        }
+        .chat-input:focus {
+            border-color: var(--primary);
+        }
+
+        .chat-send-button { /* Renamed from .comment-button */
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        .chat-send-button:hover {
+            opacity: 0.9;
+        }
+
+        /* 新内容通知 */
+        .notification-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: none; /* Hidden by default, controlled by JS */
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: slideUp 0.5s ease-out forwards; /* Added forwards to keep final state */
+            cursor: pointer; /* Make it clickable to dismiss */
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 20px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .main-grid-content {
+                grid-template-columns: 2fr 1fr; /* Left sidebar hidden, main content + right sidebar */
+            }
+            .left-sidebar {
+                display: none; /* Hide left sidebar */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-grid-content {
+                grid-template-columns: 1fr; /* Single column layout */
+            }
+            .right-sidebar {
+                display: none; /* Hide right sidebar */
+            }
+            .search-box input {
+                width: 150px;
+            }
+            .profile-actions button {
+                margin-left: 0; /* Remove margin when stacked */
+                margin-bottom: 10px; /* Add margin when stacked */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .nav-menu {
+                display: none; /* Hide main navigation on small screens */
+            }
+            .search-box {
+                display: none; /* Hide search box on very small screens */
+            }
+            .navbar {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .logo, .nav-actions {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
+            .nav-actions {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo" id="nav-home-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    校园圈
+                </a>
+
+                <ul class="nav-menu">
+                    <li><a href="#" id="nav-home" class="active">首页</a></li>
+                    <li id="nav-publish-li" style="display: none;"><a href="#" id="nav-publish">发布</a></li>
+                    <li id="nav-profile-li" style="display: none;"><a href="#" id="nav-profile">个人主页</a></li>
+                    <li id="nav-admin-li" style="display: none;"><a href="#" id="nav-admin">管理员</a></li>
+                    <li id="nav-pm-li" style="display: none;"><a href="#" id="nav-pm">私信</a></li>
+                    <li id="nav-login-register-li"><a href="#" id="nav-login">登录</a></li>
+                    <li><a href="#" id="nav-register">注册</a></li>
+                    <li id="nav-logout-li" style="display: none;"><a href="#" id="nav-logout">退出</a></li>
+                </ul>
+
+                <div class="nav-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="搜索动态、用户或话题...">
+                    </div>
+                    <div class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <div class="user-avatar-nav" id="nav-user-avatar">
+                        <img src="https://placehold.co/50x50/B3E5FC/000000?text=U" alt="用户头像">
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <div class="container">
+        <div class="main-grid-content">
+            <!-- 左侧边栏 -->
+            <aside class="sidebar left-sidebar">
+                <h3 id="sidebar-user-info-title">个人信息</h3>
+                <div id="user-info-sidebar">
+                    <!-- 登录后显示用户头像和昵称 -->
+                    <p>请<a href="#" id="sidebar-login">登录</a>或<a href="#" id="sidebar-register">注册</a></p>
+                </div>
+                <hr style="margin: 15px 0; border-color: var(--border);">
+                <h3>热门话题</h3>
+                <ul class="trending-topics">
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-hashtag"></i>
+                            #期末冲刺
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-hashtag"></i>
+                            #食堂美食
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-hashtag"></i>
+                            #社团招新
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-hashtag"></i>
+                            #周末去哪
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-hashtag"></i>
+                            #校园生活
+                        </a>
+                    </li>
+                </ul>
+                <hr style="margin: 15px 0; border-color: var(--border);">
+                <h3>好友推荐</h3>
+                <div class="friend-suggestions" id="friend-suggestions-sidebar">
+                    <!-- 模拟好友推荐，通过JS动态加载或手动添加 -->
+                    <div class="friend">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="用户头像">
+                        <div>
+                            <div class="name">张明</div>
+                            <div class="major">计算机科学</div>
+                        </div>
+                        <button class="follow-btn" data-user-id="mock-user-1">关注</button>
+                    </div>
+                    <div class="friend">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="用户头像">
+                        <div>
+                            <div class="name">李思思</div>
+                            <div class="major">金融学</div>
+                        </div>
+                        <button class="follow-btn" data-user-id="mock-user-2">关注</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 主内容区：动态流、个人主页、管理员页面、私信页面将在此显示 -->
+            <main class="feed-container">
+                <!-- 首页内容 -->
+                <section id="home-page" class="page-content">
+                    <div class="feed-header">
+                        <div class="feed-tabs">
+                            <div id="switch-all-posts" class="feed-tab active">全站动态</div>
+                            <div id="switch-following-posts" class="feed-tab">关注动态</div>
+                        </div>
+                        <button class="new-post-btn" id="new-post-btn">
+                            <i class="fas fa-plus"></i>
+                            发布动态
+                        </button>
+                    </div>
+                    <div class="post-feed" id="post-feed">
+                        <!-- 动态将由JavaScript动态加载到这里 -->
+                    </div>
+                    <div class="loading-indicator" id="loading-indicator">加载更多...</div>
+                    <div id="load-more-sentinel" style="height: 1px; margin-top: -1px;"></div> <!-- Intersection Observer 哨兵元素 -->
+                </section>
+
+                <!-- 个人主页内容 -->
+                <section id="profile-page" class="page-content profile-page">
+                    <div class="profile-header-section">
+                        <img id="profile-avatar" src="https://placehold.co/120x120/F06292/FFFFFF?text=Avatar" alt="用户头像" class="profile-avatar">
+                        <div class="profile-info">
+                            <h2 id="profile-nickname">用户昵称</h2>
+                            <p id="profile-bio">这是用户的个人简介。</p>
+                            <div class="tag-list" id="profile-tags">
+                                <!-- 兴趣标签 -->
+                                <span>#编程</span><span>#音乐</span>
+                            </div>
+                            <div class="profile-stats">
+                                <div>
+                                    <strong id="profile-following-count">0</strong>
+                                    <span>关注</span>
+                                </div>
+                                <div>
+                                    <strong id="profile-followers-count">0</strong>
+                                    <span>粉丝</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-actions" id="profile-actions">
+                            <!-- 关注/编辑按钮 -->
+                        </div>
+                    </div>
+                    <div class="profile-sections">
+                        <h3>TA的动态</h3>
+                        <div id="profile-posts-feed" class="post-feed">
+                            <!-- 用户的动态将在这里加载 -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 管理员页面 -->
+                <section id="admin-page" class="page-content admin-page">
+                    <h2>管理员面板</h2>
+                    <h3>用户列表</h3>
+                    <ul id="admin-user-list" class="user-list">
+                        <!-- 用户列表将由JS加载 -->
+                    </ul>
+                </section>
+
+                <!-- 私信页面 (UI Only) -->
+                <section id="private-message-page" class="page-content private-message-page">
+                    <h2>私信</h2>
+                    <div class="chat-window" id="chat-window">
+                        <!-- 模拟聊天消息 -->
+                        <div class="chat-message-bubble">你好，我们开始聊天吧！</div>
+                        <div class="chat-message-bubble received">好的！很高兴认识你。</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" placeholder="输入消息...">
+                        <button class="chat-send-button">发送</button>
+                    </div>
+                </section>
+            </main>
+
+            <!-- 右侧边栏 -->
+            <aside class="sidebar right-sidebar">
+                <div class="hot-posts-sidebar-section">
+                    <h3>热门推荐</h3>
+                    <div id="hot-posts-sidebar">
+                        <!-- 热门动态将由JavaScript动态加载到这里 -->
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 校园生活交友平台. All rights reserved.</p>
+    </footer>
+
+    <!-- 登录模态框 -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" data-modal-id="login-modal">&times;</span>
+            <div class="modal-header">
+                <h3 class="modal-title">登录</h3>
+            </div>
+            <div class="modal-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-student-id">学号 / 用户名</label>
+                        <input type="text" id="login-student-id" placeholder="请输入学号或用户名" required>
+                    </div>
+                    <div class="form-group password-toggle">
+                        <label for="login-password">密码</label>
+                        <input type="password" id="login-password" placeholder="请输入密码" required>
+                        <span class="toggle-icon" id="toggle-login-password"><i class="fas fa-eye-slash"></i></span>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember-me">
+                        <label for="remember-me">记住我</label>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="#" id="forgot-password-link">忘记密码？</a>
+                    </div>
+                    <button type="submit">登录</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注册模态框 -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" data-modal-id="register-modal">&times;</span>
+            <div class="modal-header">
+                <h3 class="modal-title">注册</h3>
+            </div>
+            <div class="modal-body">
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-student-id">学号 (10位数字)</label>
+                        <input type="text" id="reg-student-id" placeholder="请输入10位数字学号" pattern="^\d{10}$" required>
+                        <span class="error-message">请输入有效的10位数字学号。</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-nickname">昵称</label>
+                        <input type="text" id="reg-nickname" placeholder="请输入昵称" required minlength="2" maxlength="20">
+                        <span class="error-message">昵称长度需在2-20个字符之间。</span>
+                    </div>
+                    <div class="form-group password-toggle">
+                        <label for="reg-password">密码</label>
+                        <!-- 优化后的正则表达式：
+                            - ^: 匹配字符串开始
+                            - (?=.*[a-z]): 至少包含一个小写字母
+                            - (?=.*[A-Z]): 至少包含一个大写字母
+                            - (?=.*\d): 至少包含一个数字
+                            - (?=.*[\W_]): 至少包含一个非字母数字字符（包括下划线）
+                            - [A-Za-z\d\W_]{8,}: 包含允许的字符，且总长度至少8位
+                            - $: 匹配字符串结束
+                        -->
+                        <input type="password" id="reg-password" placeholder="至少8位，含大小写字母、数字、特殊符号" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$" required>
+                        <span class="toggle-icon" id="toggle-register-password"><i class="fas fa-eye-slash"></i></span>
+                        <span class="error-message">密码需至少8位，包含大小写字母、数字和特殊符号。</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-avatar">头像</label>
+                        <input type="file" id="reg-avatar" accept="image/*">
+                        <img id="reg-avatar-preview" src="#" alt="头像预览" style="max-width: 100px; max-height: 100px; margin-top: 10px; border-radius: 50%; object-fit: cover; display: none; border: 1px solid var(--border);">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-bio">个人简介</label>
+                        <textarea id="reg-bio" placeholder="简单介绍一下自己..." maxlength="100"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-interests">兴趣标签 (逗号分隔)</label>
+                        <input type="text" id="reg-interests" placeholder="例如：编程,音乐,电影">
+                    </div>
+                    <button type="submit">注册</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 发布/编辑动态模态框 (统一使用) -->
+    <div id="post-modal" class="modal"> <!-- Renamed from publish-modal -->
+        <div class="modal-content">
+            <span class="close-btn" data-modal-id="post-modal">&times;</span>
+            <div class="modal-header">
+                <h3 class="modal-title" id="post-modal-title">发布动态</h3>
+            </div>
+            <div class="modal-body">
+                <form id="post-form" class="post-form-modal"> <!-- Renamed from publish-form -->
+                    <textarea id="post-text" placeholder="分享你的校园生活..." required></textarea>
+
+                    <div class="form-group">
+                        <label for="post-image-url">图片链接 (可选)</label>
+                        <input type="text" id="post-image-url" placeholder="粘贴图片URL">
+                    </div>
+
+                    <div class="post-options">
+                        <div class="post-option" id="add-photo-btn">
+                            <i class="fas fa-image"></i>
+                            上传照片
+                            <input type="file" id="post-image-file" accept="image/*" multiple style="display: none;">
+                        </div>
+                        <div class="post-option">
+                            <i class="fas fa-hashtag"></i>
+                            话题 (UI only)
+                        </div>
+                        <div class="post-option active" id="visibility-public-btn" data-visibility="public">
+                            <i class="fas fa-globe-asia"></i> 公开
+                        </div>
+                        <div class="post-option" id="visibility-friends-btn" data-visibility="friends">
+                            <i class="fas fa-user-friends"></i> 仅好友
+                        </div>
+                    </div>
+
+                    <div class="preview-container" id="image-preview-container">
+                        <div style="position: relative; display: flex; flex-wrap: wrap; gap: 10px;" id="image-previews-wrapper">
+                            <!-- 图片预览将在这里显示 -->
+                            <!-- Remove button will be added dynamically if needed -->
+                        </div>
+                    </div>
+                    <button type="submit" class="post-submit-btn" id="post-submit-button">发布</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 动态详情模态框 (新添加) -->
+    <div id="post-detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" data-modal-id="post-detail-modal">&times;</span>
+            <div class="modal-header">
+                <h3 class="modal-title">动态详情</h3>
+            </div>
+            <div class="modal-body" id="post-detail-content">
+                <!-- 动态详情将由JavaScript加载到这里 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑个人资料模态框 -->
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" data-modal-id="edit-profile-modal">&times;</span>
+            <div class="modal-header">
+                <h3 class="modal-title">编辑个人资料</h3>
+            </div>
+            <div class="modal-body">
+                <form id="edit-profile-form">
+                    <div class="form-group">
+                        <label for="edit-nickname">昵称</label>
+                        <input type="text" id="edit-nickname" required minlength="2" maxlength="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-bio">个人简介</label>
+                        <textarea id="edit-bio" maxlength="100"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-interests">兴趣标签 (逗号分隔)</label>
+                        <input type="text" id="edit-interests" placeholder="例如：编程,音乐,电影">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-avatar">新头像</label>
+                        <input type="file" id="edit-avatar" accept="image/*">
+                        <img id="edit-avatar-preview" src="#" alt="头像预览" style="max-width: 100px; max-height: 100px; margin-top: 10px; border-radius: 50%; object-fit: cover; display: none; border: 1px solid var(--border);">
+                    </div>
+                    <button type="submit">保存更改</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 忘记密码模态框 (新添加) -->
+    <div id="forgot-password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" data-modal-id="forgot-password-modal">&times;</span>
+            <div class="modal-header">
+                <h3 class="modal-title">忘记密码</h3>
+            </div>
+            <div class="modal-body">
+                <form id="forgot-password-form">
+                    <div class="form-group">
+                        <label for="forgot-student-id">学号 / 用户名</label>
+                        <input type="text" id="forgot-student-id" placeholder="请输入您的学号或用户名" required>
+                    </div>
+                    <div class="form-group password-toggle">
+                        <label for="forgot-new-password">新密码</label>
+                        <input type="password" id="forgot-new-password" placeholder="请输入新密码 (至少8位，含大小写字母、数字、特殊符号)" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$" required>
+                        <span class="toggle-icon" id="toggle-forgot-password"><i class="fas fa-eye-slash"></i></span>
+                        <span class="error-message">密码需至少8位，包含大小写字母、数字和特殊符号。</span>
+                    </div>
+                    <button type="submit">重置密码</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示框 (自定义alert) -->
+    <div id="message-box" class="message-box">
+        <p id="message-text"></p>
+        <button id="message-box-ok">确定</button>
+    </div>
+
+    <!-- 新内容通知 -->
+    <div class="notification-bar" id="notification">
+        <i class="fas fa-bell"></i>
+        有3条新动态，点击查看
+    </div>
+
+    <script>
+        // JavaScript Code
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Mock Data ---
+            let users = JSON.parse(localStorage.getItem('users')) || [
+                {
+                    id: '1000000001',
+                    username: '学生A',
+                    password: 'Password@1',
+                    avatar: 'https://placehold.co/50x50/B3E5FC/000000?text=A',
+                    bio: '热爱学习，喜欢编程和音乐。',
+                    interests: ['编程', '音乐', '电影'],
+                    followers: ['1000000002'], // List of follower IDs (A is followed by B)
+                    following: ['1000000002'], // List of followed user IDs (A follows B)
+                    isAdmin: false,
+                    isBanned: false
+                },
+                {
+                    id: '1000000002',
+                    username: '学生B',
+                    password: 'Password@2',
+                    avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
+                    bio: '健身爱好者，探索校园美食。',
+                    interests: ['健身', '美食', '摄影'],
+                    followers: ['1000000001'], // B is followed by A
+                    following: ['1000000001'], // B follows A
+                    isAdmin: false,
+                    isBanned: false
+                },
+                {
+                    id: 'admin',
+                    username: '管理员',
+                    password: 'Admin@123',
+                    avatar: 'https://placehold.co/50x50/CFD8DC/000000?text=Admin',
+                    bio: '平台管理员，维护社区秩序。',
+                    interests: ['管理'],
+                    followers: [],
+                    following: [],
+                    isAdmin: true,
+                    isBanned: false
+                }
+            ];
+
+            let posts = JSON.parse(localStorage.getItem('posts')) || [
+                {
+                    id: 'post1',
+                    userId: '1000000001',
+                    username: '学生A',
+                    avatar: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=600&q=80',
+                    content: '期末周冲刺！图书馆走起，希望都能顺利通过！📚 #期末冲刺 #学习日常',
+                    images: ['https://images.unsplash.com/photo-1495640388908-05fa85288e61?auto=format&fit=crop&w=600&q=80'],
+                    tags: ['学习日常', '书籍推荐', '设计学习'],
+                    timestamp: new Date(Date.now() - 3600 * 1000).toISOString(), // 1 hour ago
+                    likes: ['1000000002'],
+                    comments: [
+                        { id: 'comment1_1', userId: '1000000002', username: '学生B', text: '加油！我也在图书馆！', timestamp: new Date(Date.now() - 3500 * 1000).toISOString(), likes: ['1000000001'] }, // Added likes to comment
+                        { id: 'comment1_2', userId: '1000000001', username: '学生A', text: '谢谢，一起努力！', timestamp: new Date(Date.now() - 3400 * 1000).toISOString(), likes: [] },
+                        { id: 'comment1_3', userId: '1000000002', username: '学生B', text: '学习累了就放松一下~', timestamp: new Date(Date.now() - 3300 * 1000).toISOString(), likes: ['admin'] },
+                        { id: 'comment1_4', userId: 'admin', username: '管理员', text: '祝大家考试顺利！', timestamp: new Date(Date.now() - 3200 * 1000).toISOString(), likes: ['1000000001', '1000000002'] }
+                    ],
+                    shares: 3,
+                    isPrivate: false // Public
+                },
+                {
+                    id: 'post2',
+                    userId: '1000000002',
+                    username: '学生B',
+                    avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
+                    content: '今天食堂新出的酸菜鱼，味道绝了！推荐大家去尝尝！🐟 #食堂美食 #校园生活',
+                    images: ['https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=600&q=80'],
+                    tags: ['食堂美食', '校园生活'],
+                    timestamp: new Date(Date.now() - 7200 * 1000).toISOString(), // 2 hours ago
+                    likes: ['1000000001', 'admin'],
+                    comments: [
+                        { id: 'comment2_1', userId: '1000000001', username: '学生A', text: '看起来不错！', timestamp: new Date(Date.now() - 7100 * 1000).toISOString(), likes: [] }
+                    ],
+                    shares: 7,
+                    isPrivate: false // Public
+                },
+                {
+                    id: 'post3',
+                    userId: '1000000001',
+                    username: '学生A',
+                    avatar: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=600&q=80',
+                    content: '周末天气真好，出去走走散散心。校园里花都开了，景色宜人。🌸',
+                    images: [],
+                    tags: [],
+                    timestamp: new Date(Date.now() - 86400 * 1000).toISOString(), // 1 day ago
+                    likes: [],
+                    comments: [],
+                    shares: 1,
+                    isPrivate: true // Private (friends only)
+                },
+                {
+                    id: 'post4',
+                    userId: 'admin',
+                    username: '管理员',
+                    avatar: 'https://placehold.co/50x50/CFD8DC/000000?text=Admin',
+                    content: '各位同学，请注意保护个人信息安全，谨防网络诈骗！',
+                    images: [],
+                    tags: ['安全提示', '校园通知'],
+                    timestamp: new Date(Date.now() - 2 * 86400 * 1000).toISOString(), // 2 days ago
+                    likes: [],
+                    comments: [],
+                    shares: 0,
+                    isPrivate: false // Public
+                }
+            ];
+
+            let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser')); // Try to load login status from localStorage
+
+            // --- DOM Elements Retrieval ---
+            const body = document.body;
+            const navHome = document.getElementById('nav-home');
+            const navHomeLogo = document.getElementById('nav-home-logo');
+            const navPublishLi = document.getElementById('nav-publish-li');
+            const navPublish = document.getElementById('nav-publish');
+            const navProfileLi = document.getElementById('nav-profile-li');
+            const navProfile = document.getElementById('nav-profile');
+            const navAdminLi = document.getElementById('nav-admin-li');
+            const navAdmin = document.getElementById('nav-admin');
+            const navPmLi = document.getElementById('nav-pm-li');
+            const navPm = document.getElementById('nav-pm');
+            const navLoginRegisterLi = document.getElementById('nav-login-register-li');
+            const navLogin = document.getElementById('nav-login');
+            const navRegister = document.getElementById('nav-register');
+            const navLogoutLi = document.getElementById('nav-logout-li');
+            const navLogout = document.getElementById('nav-logout');
+            const themeToggle = document.getElementById('theme-toggle');
+            const navUserAvatar = document.getElementById('nav-user-avatar');
+
+            const userInfoSidebar = document.getElementById('user-info-sidebar');
+            const sidebarLogin = document.getElementById('sidebar-login');
+            const sidebarRegister = document.getElementById('sidebar-register');
+            const sidebarUserInfoTitle = document.getElementById('sidebar-user-info-title');
+            const friendSuggestionsSidebar = document.getElementById('friend-suggestions-sidebar');
+
+            const homePage = document.getElementById('home-page');
+            const profilePage = document.getElementById('profile-page');
+            const adminPage = document.getElementById('admin-page');
+            const privateMessagePage = document.getElementById('private-message-page');
+
+            const postFeed = document.getElementById('post-feed');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const loadMoreSentinel = document.getElementById('load-more-sentinel');
+            const hotPostsSidebar = document.getElementById('hot-posts-sidebar');
+
+            const loginModal = document.getElementById('login-modal');
+            const registerModal = document.getElementById('register-modal');
+            const postModal = document.getElementById('post-modal');
+            const editProfileModal = document.getElementById('edit-profile-modal');
+            const forgotPasswordModal = document.getElementById('forgot-password-modal');
+            const postDetailModal = document.getElementById('post-detail-modal');
+            const closeButtons = document.querySelectorAll('.close-btn');
+
+            const loginForm = document.getElementById('login-form');
+            const loginStudentIdInput = document.getElementById('login-student-id');
+            const loginPasswordInput = document.getElementById('login-password');
+            const rememberMeCheckbox = document.getElementById('remember-me');
+            const toggleLoginPassword = document.getElementById('toggle-login-password');
+            const forgotPasswordLink = document.getElementById('forgot-password-link');
+
+            const registerForm = document.getElementById('register-form');
+            const regStudentIdInput = document.getElementById('reg-student-id');
+            const regNicknameInput = document.getElementById('reg-nickname');
+            const regPasswordInput = document.getElementById('reg-password');
+            const regAvatarInput = document.getElementById('reg-avatar');
+            const regAvatarPreview = document.getElementById('reg-avatar-preview');
+            const regBioInput = document.getElementById('reg-bio');
+            const regInterestsInput = document.getElementById('reg-interests');
+            const toggleRegisterPassword = document.getElementById('toggle-register-password');
+
+            const profileAvatar = document.getElementById('profile-avatar');
+            const profileNickname = document.getElementById('profile-nickname');
+            const profileBio = document.getElementById('profile-bio');
+            const profileTags = document.getElementById('profile-tags');
+            const profileFollowingCount = document.getElementById('profile-following-count');
+            const profileFollowersCount = document.getElementById('profile-followers-count');
+            const profileActions = document.getElementById('profile-actions');
+            const profilePostsFeed = document.getElementById('profile-posts-feed');
+
+            const postForm = document.getElementById('post-form');
+            const postTextarea = document.getElementById('post-text');
+            const addPhotoBtn = document.getElementById('add-photo-btn');
+            const postImageFile = document.getElementById('post-image-file');
+            const postImageUrl = document.getElementById('post-image-url');
+            const visibilityPublicBtn = document.getElementById('visibility-public-btn');
+            const visibilityFriendsBtn = document.getElementById('visibility-friends-btn');
+            let currentVisibility = 'public';
+
+            const imagePreviewContainer = document.getElementById('image-preview-container');
+            const imagePreviewsWrapper = document.getElementById('image-previews-wrapper');
+            const postSubmitButton = document.getElementById('post-submit-button');
+            const postModalTitle = document.getElementById('post-modal-title');
+            let currentEditingPostId = null;
+
+            const postDetailContent = document.getElementById('post-detail-content');
+
+            const editProfileForm = document.getElementById('edit-profile-form');
+            const editNicknameInput = document.getElementById('edit-nickname');
+            const editBioInput = document.getElementById('edit-bio');
+            const editInterestsInput = document.getElementById('edit-interests');
+            const editAvatarInput = document.getElementById('edit-avatar');
+            const editAvatarPreview = document.getElementById('edit-avatar-preview');
+
+            const forgotPasswordForm = document.getElementById('forgot-password-form');
+            const forgotStudentIdInput = document.getElementById('forgot-student-id');
+            const forgotNewPasswordInput = document.getElementById('forgot-new-password');
+            const toggleForgotPassword = document.getElementById('toggle-forgot-password');
+
+            const newPostBtn = document.getElementById('new-post-btn');
+
+            const switchAllPostsBtn = document.getElementById('switch-all-posts');
+            const switchFollowingPostsBtn = document.getElementById('switch-following-posts');
+
+            const adminUserList = document.getElementById('admin-user-list');
+
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            const messageBoxOkBtn = document.getElementById('message-box-ok');
+
+            const notificationBar = document.getElementById('notification');
+
+
+            // --- Global State Variables ---
+            let currentPage = 'home';
+            let currentFeedView = 'all'; // 'all' or 'following'
+            const postsPerPage = 5;
+            let currentPostPageIndex = 0;
+            let isLoadingPosts = false;
+            let currentProfileUser = null;
+
+            // --- Helper Functions ---
+
+            /**
+             * 显示自定义消息框
+             * @param {string} message 要显示的消息
+             * @param {function} [callback] 确定按钮点击后的回调函数
+             */
+            function showMessage(message, callback = null) {
+                messageText.textContent = message;
+                messageBox.style.display = 'flex';
+                messageBox.style.opacity = '0';
+                messageBox.style.transform = 'translate(-50%, -60%)';
+                setTimeout(() => {
+                    messageBox.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    messageBox.style.opacity = '1';
+                    messageBox.style.transform = 'translate(-50%, -50%)';
+                }, 10);
+
+                messageBoxOkBtn.onclick = () => {
+                    messageBox.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    messageBox.style.opacity = '0';
+                    messageBox.style.transform = 'translate(-50%, -60%)';
+                    setTimeout(() => {
+                        messageBox.style.display = 'none';
+                        if (callback) {
+                            callback();
+                        }
+                    }, 300);
+                };
+            }
+
+            /**
+             * 将日期时间格式化为用户友好的字符串
+             * @param {string} isoString ISO格式的日期字符串
+             * @returns {string} 格式化后的时间字符串
+             */
+            function formatTime(isoString) {
+                const date = new Date(isoString);
+                const now = new Date();
+                const diffSeconds = Math.round((now - date) / 1000);
+                const diffMinutes = Math.round(diffSeconds / 60);
+                const diffHours = Math.round(diffMinutes / 60);
+                const diffDays = Math.round(diffHours / 24);
+
+                if (diffSeconds < 60) return `${diffSeconds} 秒前`;
+                if (diffMinutes < 60) return `${diffMinutes} 分钟前`;
+                if (diffHours < 24) return `${diffHours} 小时前`;
+                if (diffDays < 7) return `${diffDays} 天前`;
+                return date.toLocaleDateString();
+            }
+
+            /**
+             * 检查两个用户是否互为好友（互关）
+             * @param {string} user1Id 用户1的ID
+             * @param {string} user2Id 用户2的ID
+             * @returns {boolean} 如果互关则返回true
+             */
+            function isFriend(user1Id, user2Id) {
+                const user1 = users.find(u => u.id === user1Id);
+                const user2 = users.find(u => u.id === user2Id);
+
+                if (!user1 || !user2) return false;
+
+                const user1Follows2 = user1.following.includes(user2Id);
+                const user2Follows1 = user2.following.includes(user1Id);
+
+                return user1Follows2 && user2Follows1;
+            }
+
+            /**
+             * 保存数据到LocalStorage
+             */
+            function saveData() {
+                localStorage.setItem('users', JSON.stringify(users));
+                localStorage.setItem('posts', JSON.stringify(posts));
+                localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+            }
+
+            /**
+             * 根据登录状态更新导航栏和侧边栏
+             */
+            function updateNavigation() {
+                if (loggedInUser) {
+                    navPublishLi.style.display = 'block';
+                    navProfileLi.style.display = 'block';
+                    navLoginRegisterLi.style.display = 'none';
+                    navLogoutLi.style.display = 'block';
+                    navPmLi.style.display = 'block';
+                    newPostBtn.style.display = 'flex';
+
+                    sidebarUserInfoTitle.textContent = '我的信息';
+                    userInfoSidebar.innerHTML = `
+                        <img src="${loggedInUser.avatar}" alt="用户头像" class="post-header img" style="width: 60px; height: 60px; margin-bottom: 10px; border: 2px solid var(--primary); cursor:pointer;">
+                        <h3 style="margin-bottom: 5px; color: var(--primary); cursor:pointer;">${loggedInUser.username}</h3>
+                        <p style="font-size: 0.9rem; color: var(--dark);">${loggedInUser.bio || '暂无简介'}</p>
+                        <p style="font-size: 0.9rem; color: var(--dark);">关注: ${loggedInUser.following.length} | 粉丝: ${loggedInUser.followers.length}</p>
+                        <button id="sidebar-my-profile" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; margin-top: 10px; font-size: 0.9rem; transition: opacity 0.3s ease;">我的主页</button>
+                    `;
+                    document.getElementById('sidebar-my-profile').addEventListener('click', () => {
+                        showPage('profile');
+                        renderProfile(loggedInUser);
+                    });
+                    userInfoSidebar.querySelector('img').addEventListener('click', () => { showPage('profile'); renderProfile(loggedInUser); });
+                    userInfoSidebar.querySelector('h3').addEventListener('click', () => { showPage('profile'); renderProfile(loggedInUser); });
+
+                    navUserAvatar.innerHTML = `<img src="${loggedInUser.avatar}" alt="用户头像">`;
+
+                    if (loggedInUser.isAdmin) {
+                        navAdminLi.style.display = 'block';
+                    } else {
+                        navAdminLi.style.display = 'none';
+                    }
+
+                } else {
+                    navPublishLi.style.display = 'none';
+                    navProfileLi.style.display = 'none';
+                    navAdminLi.style.display = 'none';
+                    navPmLi.style.display = 'none';
+                    navLoginRegisterLi.style.display = 'block';
+                    navLogoutLi.style.display = 'none';
+                    newPostBtn.style.display = 'none';
+
+                    sidebarUserInfoTitle.textContent = '个人信息';
+                    userInfoSidebar.innerHTML = `
+                        <p>请<a href="#" id="sidebar-login">登录</a>或<a href="#" id="sidebar-register">注册</a></p>
+                    `;
+                    document.getElementById('sidebar-login').addEventListener('click', () => showModal('login-modal'));
+                    document.getElementById('sidebar-register').addEventListener('click', () => showModal('register-modal'));
+
+                    navUserAvatar.innerHTML = `<img src="https://placehold.co/50x50/B3E5FC/000000?text=U" alt="用户头像">`;
+                }
+                saveData();
+            }
+
+            /**
+             * 隐藏所有内容页面，显示指定页面
+             * @param {string} pageId 要显示的页面ID
+             */
+            function showPage(pageId) {
+                const pages = document.querySelectorAll('.page-content');
+                pages.forEach(page => page.style.display = 'none');
+
+                document.querySelectorAll('.nav-menu a').forEach(link => link.classList.remove('active'));
+                document.querySelectorAll('.feed-tab').forEach(tab => tab.classList.remove('active'));
+
+                switch (pageId) {
+                    case 'home':
+                        homePage.style.display = 'block';
+                        navHome.classList.add('active');
+                        currentFeedView = 'all'; // Default to 'all' view when returning to home
+                        switchAllPostsBtn.classList.add('active');
+                        switchFollowingPostsBtn.classList.remove('active');
+                        currentPostPageIndex = 0;
+                        postFeed.innerHTML = '';
+                        loadMorePosts();
+                        break;
+                    case 'profile':
+                        profilePage.style.display = 'block';
+                        navProfile.classList.add('active');
+                        break;
+                    case 'admin':
+                        if (loggedInUser && loggedInUser.isAdmin) {
+                            adminPage.style.display = 'block';
+                            navAdmin.classList.add('active');
+                            renderAdminUserList();
+                        } else {
+                            showMessage('您没有权限访问管理员页面。');
+                            showPage('home');
+                        }
+                        break;
+                    case 'pm':
+                        if (loggedInUser) {
+                            privateMessagePage.style.display = 'flex';
+                            navPm.classList.add('active');
+                        } else {
+                            showMessage('请先登录才能查看私信。');
+                            showModal('login-modal');
+                        }
+                        break;
+                }
+                currentPage = pageId;
+            }
+
+            /**
+             * 显示模态框
+             * @param {string} modalId 要显示的模态框ID
+             */
+            function showModal(modalId) {
+                document.getElementById(modalId).style.display = 'flex';
+            }
+
+            /**
+             * 关闭所有模态框
+             */
+            function hideModals() {
+                loginModal.style.display = 'none';
+                registerModal.style.display = 'none';
+                postModal.style.display = 'none';
+                editProfileModal.style.display = 'none';
+                forgotPasswordModal.style.display = 'none';
+                postDetailModal.style.display = 'none';
+            }
+
+            /**
+             * 渲染单条评论
+             * @param {object} comment 评论数据对象
+             * @param {string} postId 评论所属动态的ID
+             * @param {boolean} [isDetailView=false] 是否在详情页渲染
+             * @returns {HTMLElement} 评论的DOM元素
+             */
+            function renderComment(comment, postId, isDetailView = false) {
+                const commentItem = document.createElement('div');
+                commentItem.className = 'comment-item';
+                commentItem.dataset.commentId = comment.id;
+                commentItem.dataset.userId = comment.userId;
+
+                const commenter = users.find(u => u.id === comment.userId);
+                const commenterAvatar = commenter?.avatar || 'https://placehold.co/36x36/CCCCCC/000000?text=U';
+                const commenterName = commenter?.username || '未知用户';
+                const isLikedByCurrentUser = loggedInUser && comment.likes.includes(loggedInUser.id);
+
+                commentItem.innerHTML = `
+                    <img src="${commenterAvatar}" alt="评论者头像">
+                    <div class="comment-content-bubble">
+                        <div class="comment-header-info">
+                            <div class="comment-name">${commenterName}</div>
+                            <div class="comment-meta-actions">
+                                <div class="comment-time">${formatTime(comment.timestamp)}</div>
+                                <button class="comment-action-btn comment-like-btn ${isLikedByCurrentUser ? 'active' : ''}" data-post-id="${postId}" data-comment-id="${comment.id}">
+                                    <i class="${isLikedByCurrentUser ? 'fas' : 'far'} fa-thumbs-up"></i>
+                                    <span class="comment-likes-count">${comment.likes.length}</span>
+                                </button>
+                                ${loggedInUser && loggedInUser.id === comment.userId ? `
+                                <button class="comment-action-btn comment-delete-btn" data-post-id="${postId}" data-comment-id="${comment.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div class="comment-text">${comment.text}</div>
+                    </div>
+                `;
+
+                // Add event listeners for comment actions (delegated where possible, or directly if needed)
+                const likeBtn = commentItem.querySelector('.comment-like-btn');
+                if (likeBtn) {
+                    likeBtn.addEventListener('click', (event) => {
+                        event.stopPropagation(); // Prevent opening post detail
+                        handlePostAction(postId, 'comment_like', null, comment.id);
+                    });
+                }
+                const deleteBtn = commentItem.querySelector('.comment-delete-btn');
+                if (deleteBtn) {
+                     deleteBtn.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        handlePostAction(postId, 'comment_delete', null, comment.id);
+                    });
+                }
+                return commentItem;
+            }
+
+            /**
+             * 渲染单条动态卡片
+             * @param {object} post 动态数据对象
+             * @returns {HTMLElement} 动态卡片的DOM元素
+             */
+            function renderPost(post) {
+                const postCard = document.createElement('div');
+                postCard.className = 'post';
+                postCard.dataset.postId = post.id;
+                postCard.dataset.userId = post.userId;
+
+                const isCurrentUserPost = loggedInUser && loggedInUser.id === post.userId;
+                const isLiked = loggedInUser && post.likes.includes(loggedInUser.id);
+                const isPrivate = post.isPrivate;
+
+                // Get top 3 comments by likes for preview
+                const topComments = [...post.comments].sort((a, b) => b.likes.length - a.likes.length).slice(0, 3);
+                let commentsPreviewHtml = '';
+                if (topComments.length > 0) {
+                    commentsPreviewHtml = `
+                        <div class="comments-preview">
+                            <h4>热门评论</h4>
+                            ${topComments.map(comment => {
+                                const commenter = users.find(u => u.id === comment.userId);
+                                const commenterName = commenter?.username || '未知用户';
+                                const isLikedByCurrentUser = loggedInUser && comment.likes.includes(loggedInUser.id);
+                                return `
+                                    <div class="comment-item" data-comment-id="${comment.id}">
+                                        <img src="${commenter?.avatar || 'https://placehold.co/36x36/CCCCCC/000000?text=U'}" alt="评论者头像">
+                                        <div class="comment-content-bubble">
+                                            <div class="comment-header-info">
+                                                <div class="comment-name">${commenterName}</div>
+                                                <div class="comment-meta-actions">
+                                                    <div class="comment-time">${formatTime(comment.timestamp)}</div>
+                                                    <button class="comment-action-btn comment-like-btn ${isLikedByCurrentUser ? 'active' : ''}" data-post-id="${post.id}" data-comment-id="${comment.id}">
+                                                        <i class="${isLikedByCurrentUser ? 'fas' : 'far'} fa-thumbs-up"></i>
+                                                        <span class="comment-likes-count">${comment.likes.length}</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="comment-text">${comment.text}</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                            <span class="view-all-comments-link" data-post-id="${post.id}">查看所有 ${post.comments.length} 条评论</span>
+                        </div>
+                    `;
+                }
+
+
+                const postHtml = `
+                    <div class="post-header">
+                        <img src="${post.avatar}" alt="${post.username}的头像" style="cursor:pointer;" data-user-id="${post.userId}">
+                        <div class="post-user-info">
+                            <div class="name" style="cursor:pointer;" data-user-id="${post.userId}">${post.username}</div>
+                            <div class="time">
+                                ${formatTime(post.timestamp)}
+                                ${isPrivate ? ` · <i class="fas fa-user-friends"></i> 仅好友可见` : ` · <i class="fas fa-globe-asia"></i> 公开`}
+                            </div>
+                        </div>
+                        <div class="post-menu">
+                            <button class="post-menu-btn">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                            <div class="post-menu-dropdown">
+                                <button><i class="fas fa-bookmark"></i> 收藏</button>
+                                <button><i class="fas fa-share-alt"></i> 分享</button>
+                                ${isCurrentUserPost ? `
+                                <button class="edit-post-from-menu" data-post-id="${post.id}"><i class="fas fa-edit"></i> 编辑</button>
+                                <button class="delete-post-from-menu" data-post-id="${post.id}"><i class="fas fa-trash"></i> 删除</button>
+                                ` : `<button><i class="fas fa-flag"></i> 举报</button>`}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-content-area" data-post-id="${post.id}"> <!-- Make content area clickable -->
+                        <div class="post-content">
+                            <p>${post.content.replace(/\n/g, '<br>')}</p>
+                        </div>
+                        ${post.tags && post.tags.length > 0 ? `
+                            <div class="post-tags">
+                                ${post.tags.map(tag => `<span class="post-tag">#${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        ${post.images && post.images.length > 0 ? `
+                            <div class="post-images-grid" style="grid-template-columns: repeat(${Math.min(post.images.length, 3)}, 1fr);">
+                                ${post.images.map(imgSrc => `<img src="${imgSrc}" alt="动态图片" onerror="this.onerror=null;this.src='https://placehold.co/120x120/CCCCCC/000000?text=无法加载';">`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="post-stats">
+                        <span><i class="far fa-thumbs-up"></i> ${post.likes.length}</span>
+                        <span><i class="far fa-comment"></i> ${post.comments.length}</span>
+                        <span><i class="fas fa-share"></i> ${post.shares}</span>
+                    </div>
+                    <div class="post-actions">
+                        <button class="post-action like-btn ${isLiked ? 'active' : ''}" data-post-id="${post.id}">
+                            <i class="${isLiked ? 'fas' : 'far'} fa-thumbs-up"></i>
+                            点赞
+                        </button>
+                        <button class="post-action comment-trigger-btn" data-post-id="${post.id}">
+                            <i class="far fa-comment"></i>
+                            评论
+                        </button>
+                        <button class="post-action share-btn" data-post-id="${post.id}">
+                            <i class="fas fa-share"></i>
+                            分享
+                        </button>
+                    </div>
+                    <div class="comments-section">
+                        ${loggedInUser ? `
+                        <div class="add-comment-area" style="display: none;">
+                            <img src="${loggedInUser.avatar}" alt="用户头像">
+                            <div class="comment-input-wrapper">
+                                <input type="text" class="comment-input" placeholder="写下你的评论..." data-post-id="${post.id}">
+                                <button class="submit-comment-btn" data-post-id="${post.id}"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                        ` : `<p style="text-align: center; color: var(--dark); font-size: 0.9rem; margin-top: 15px; display: none;">登录后可评论和互动。</p>`}
+                        ${commentsPreviewHtml}
+                        <!-- Full comments list, initially hidden -->
+                        <div class="comment-list" id="comment-list-${post.id}" style="display: none;">
+                            <!-- All comments will be rendered here if expanded via button, or in detail page -->
+                        </div>
+                    </div>
+                `;
+                postCard.innerHTML = postHtml;
+                return postCard;
+            }
+
+            /**
+             * 渲染动态详情页内容到模态框
+             * @param {object} post 动态数据对象
+             */
+            function renderPostDetail(post) {
+                const isCurrentUserPost = loggedInUser && loggedInUser.id === post.userId;
+                const isLiked = loggedInUser && post.likes.includes(loggedInUser.id);
+                const isPrivate = post.isPrivate;
+
+                // Build the common post details HTML
+                let detailHtml = `
+                    <div class="post-header">
+                        <img src="${post.avatar}" alt="${post.username}的头像" style="cursor:pointer;" data-user-id="${post.userId}">
+                        <div class="post-user-info">
+                            <div class="name" style="cursor:pointer;" data-user-id="${post.userId}">${post.username}</div>
+                            <div class="time">
+                                ${formatTime(post.timestamp)}
+                                ${isPrivate ? ` · <i class="fas fa-user-friends"></i> 仅好友可见` : ` · <i class="fas fa-globe-asia"></i> 公开`}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <p>${post.content.replace(/\n/g, '<br>')}</p>
+                    </div>
+                    ${post.tags && post.tags.length > 0 ? `
+                        <div class="post-tags">
+                            ${post.tags.map(tag => `<span class="post-tag">#${tag}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    ${post.images && post.images.length > 0 ? `
+                        <div class="post-images-grid" style="grid-template-columns: repeat(${Math.min(post.images.length, 3)}, 1fr);">
+                            ${post.images.map(imgSrc => `<img src="${imgSrc}" alt="动态图片" onerror="this.onerror=null;this.src='https://placehold.co/120x120/CCCCCC/000000?text=无法加载';">`).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="post-stats">
+                        <span><i class="far fa-thumbs-up"></i> <span id="detail-likes-count">${post.likes.length}</span></span>
+                        <span><i class="far fa-comment"></i> <span id="detail-comments-count">${post.comments.length}</span></span>
+                        <span><i class="fas fa-share"></i> <span id="detail-shares-count">${post.shares}</span></span>
+                    </div>
+                    <div class="post-actions">
+                        <button class="post-action like-btn ${isLiked ? 'active' : ''}" data-post-id="${post.id}">
+                            <i class="${isLiked ? 'fas' : 'far'} fa-thumbs-up"></i>
+                            点赞
+                        </button>
+                        <button class="post-action share-btn" data-post-id="${post.id}">
+                            <i class="fas fa-share"></i>
+                            分享
+                        </button>
+                    </div>
+                `;
+
+                // Add comment section with input area at the top
+                detailHtml += `
+                    <div class="comments-section show">
+                        <h4 style="margin-bottom: 10px; color: var(--primary);">评论 (${post.comments.length})</h4>
+                        ${loggedInUser ? `
+                        <div class="add-comment-area">
+                            <img src="${loggedInUser.avatar}" alt="用户头像">
+                            <div class="comment-input-wrapper">
+                                <input type="text" class="comment-input" placeholder="写下你的评论..." data-post-id="${post.id}">
+                                <button class="submit-comment-btn" data-post-id="${post.id}"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                        ` : `<p style="text-align: center; color: var(--dark); font-size: 0.9rem; margin-top: 15px;">登录后可评论和互动。</p>`}
+                        <div class="comment-list" id="detail-comment-list-${post.id}">
+                            <!-- All comments will be rendered here -->
+                        </div>
+                    </div>
+                `;
+
+                postDetailContent.innerHTML = detailHtml;
+
+                // Render all comments in detail view, sorted by likes
+                const detailCommentList = postDetailContent.querySelector(`#detail-comment-list-${post.id}`);
+                // Sort comments by timestamp (most recent first) for display
+                [...post.comments].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(comment => {
+                    detailCommentList.appendChild(renderComment(comment, post.id, true));
+                });
+                detailCommentList.scrollTop = 0; // Scroll to top to see new comment input
+
+
+                // Re-attach event listeners for like/share/comment in detail view
+                postDetailContent.querySelector('.like-btn').addEventListener('click', (event) => handlePostAction(event.currentTarget.dataset.postId, 'like'));
+                postDetailContent.querySelector('.share-btn').addEventListener('click', (event) => handlePostAction(event.currentTarget.dataset.postId, 'share'));
+
+                const detailCommentInput = postDetailContent.querySelector('.comment-input');
+                const detailSubmitCommentBtn = postDetailContent.querySelector('.submit-comment-btn');
+                if (detailSubmitCommentBtn) {
+                    detailSubmitCommentBtn.addEventListener('click', (event) => handlePostAction(event.currentTarget.dataset.postId, 'comment', detailCommentInput));
+                }
+
+                // Make avatar/username clickable in detail view
+                postDetailContent.querySelector('.post-header img').addEventListener('click', (event) => {
+                    hideModals();
+                    const userIdToView = event.currentTarget.dataset.userId;
+                    const userToView = users.find(u => u.id === userIdToView);
+                    if (userToView) {
+                        showPage('profile');
+                        renderProfile(userToView);
+                    }
+                });
+                postDetailContent.querySelector('.post-user-info .name').addEventListener('click', (event) => {
+                    hideModals();
+                    const userIdToView = event.currentTarget.dataset.userId;
+                    const userToView = users.find(u => u.id === userIdToView);
+                    if (userToView) {
+                        showPage('profile');
+                        renderProfile(userToView);
+                    }
+                });
+            }
+
+            /**
+             * 加载更多动态并渲染到页面
+             */
+            function loadMorePosts() {
+                if (isLoadingPosts) return;
+                isLoadingPosts = true;
+                loadingIndicator.style.display = 'block';
+                loadingIndicator.textContent = '加载更多...';
+
+                setTimeout(() => {
+                    let filteredPosts = [];
+
+                    if (!loggedInUser) {
+                        // If not logged in, only show public posts for both views.
+                        filteredPosts = posts.filter(p => !p.isPrivate);
+                        if (currentFeedView === 'following') {
+                             showMessage('请先登录才能查看关注的动态。');
+                             isLoadingPosts = false;
+                             loadingIndicator.style.display = 'none';
+                             return;
+                        }
+                    } else if (currentFeedView === 'all') {
+                        // "全站动态" logic for logged-in user:
+                        // All public posts + private posts from mutual friends + user's own posts
+                        filteredPosts = posts.filter(p =>
+                            (!p.isPrivate) || // 公开动态
+                            (p.userId === loggedInUser.id) || // 用户自己的动态
+                            (p.isPrivate && isFriend(loggedInUser.id, p.userId)) // 好友的私密动态
+                        );
+                    } else if (currentFeedView === 'following') {
+                        // "关注动态" logic for logged-in user:
+                        // User's own posts + public posts from users they follow + private posts from mutual friends
+                        filteredPosts = posts.filter(p =>
+                            (p.userId === loggedInUser.id) || // 用户自己的动态
+                            (loggedInUser.following.includes(p.userId) && !p.isPrivate) || // 关注用户的公开动态
+                            (p.isPrivate && isFriend(loggedInUser.id, p.userId)) // 好友的私密动态
+                        );
+                    }
+
+
+                    filteredPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                    const startIndex = currentPostPageIndex * postsPerPage;
+                    const endIndex = startIndex + postsPerPage;
+                    const postsToLoad = filteredPosts.slice(startIndex, endIndex);
+
+                    if (postsToLoad.length === 0 && currentPostPageIndex === 0) {
+                        postFeed.innerHTML = '<p style="text-align: center; color: var(--dark); padding: 20px;">暂时没有动态哦，去发布第一条动态吧！</p>';
+                    } else if (postsToLoad.length === 0) {
+                        loadingIndicator.textContent = '没有更多动态了。';
+                        setTimeout(() => loadingIndicator.style.display = 'none', 1000);
+                    } else {
+                        const fragment = document.createDocumentFragment();
+                        postsToLoad.forEach(post => {
+                            fragment.appendChild(renderPost(post));
+                        });
+                        postFeed.appendChild(fragment);
+                        currentPostPageIndex++;
+                    }
+
+                    isLoadingPosts = false;
+                    if (postsToLoad.length > 0 && postsToLoad.length < postsPerPage) {
+                         loadingIndicator.textContent = '没有更多动态了。';
+                         setTimeout(() => loadingIndicator.style.display = 'none', 1000);
+                    } else if (postsToLoad.length === postsPerPage) {
+                        loadingIndicator.style.display = 'none';
+                    }
+                }, 500);
+            }
+
+            /**
+             * Handles post actions like like, share, comment, and comment like/delete.
+             * @param {string} postId - ID of the post.
+             * @param {string} actionType - 'like', 'share', 'comment', 'comment_like', 'comment_delete'.
+             * @param {HTMLInputElement} [commentInput] - The input element for comments (required for 'comment' action).
+             * @param {string} [commentId] - The ID of the comment (required for 'comment_like' and 'comment_delete').
+             */
+            function handlePostAction(postId, actionType, commentInput = null, commentId = null) {
+                const post = posts.find(p => p.id === postId);
+                if (!post) return;
+
+                if (!loggedInUser && actionType !== 'comment_delete') { // Allow delete if current user is the comment author, even if logged out (not realistic but for demo)
+                    showMessage('请先登录才能互动。');
+                    showModal('login-modal');
+                    return;
+                }
+
+                // For post detail modal, these elements are within postDetailContent
+                const currentPostElement = document.querySelector(`.post[data-post-id="${postId}"]`);
+
+                const updatePostStats = () => {
+                    document.querySelectorAll(`.post[data-post-id="${postId}"] .post-stats span:first-child`).forEach(span => {
+                        span.innerHTML = `<i class="${post.likes.includes(loggedInUser?.id) ? 'fas' : 'far'} fa-thumbs-up"></i> ${post.likes.length}`;
+                    });
+                    document.querySelectorAll(`.post[data-post-id="${postId}"] .post-stats span:nth-child(2)`).forEach(span => {
+                        span.innerHTML = `<i class="far fa-comment"></i> ${post.comments.length}`;
+                    });
+                    document.querySelectorAll(`.post[data-post-id="${postId}"] .post-stats span:nth-child(3)`).forEach(span => {
+                        span.innerHTML = `<i class="fas fa-share"></i> ${post.shares}`;
+                    });
+
+                    // Update detail modal if open
+                    if (postDetailModal.style.display === 'flex' && postDetailContent.querySelector('#detail-likes-count')) {
+                        postDetailContent.querySelector('#detail-likes-count').textContent = post.likes.length;
+                        postDetailContent.querySelector('#detail-comments-count').textContent = post.comments.length;
+                        postDetailContent.querySelector('#detail-shares-count').textContent = post.shares;
+                    }
+                };
+
+                const updateCommentCountsInPreview = () => {
+                     const postCard = document.querySelector(`.post[data-post-id="${postId}"]`);
+                     if (postCard) {
+                         const viewAllLink = postCard.querySelector('.view-all-comments-link');
+                         if (viewAllLink) {
+                             viewAllLink.textContent = `查看所有 ${post.comments.length} 条评论`;
+                         }
+                     }
+                };
+
+
+                switch (actionType) {
+                    case 'like':
+                        const isLiked = post.likes.includes(loggedInUser.id);
+                        if (isLiked) {
+                            post.likes = post.likes.filter(id => id !== loggedInUser.id);
+                        } else {
+                            post.likes.push(loggedInUser.id);
+                        }
+                        // Update UI for all relevant elements (main feed and detail modal)
+                        document.querySelectorAll(`.post[data-post-id="${postId}"] .like-btn`).forEach(btn => {
+                            btn.classList.toggle('active', post.likes.includes(loggedInUser.id));
+                            btn.querySelector('i').className = post.likes.includes(loggedInUser.id) ? 'fas fa-thumbs-up' : 'far fa-thumbs-up';
+                        });
+                        updatePostStats();
+                        break;
+
+                    case 'share':
+                        post.shares = (post.shares || 0) + 1;
+                        updatePostStats();
+                        showMessage('动态已分享！');
+                        break;
+
+                    case 'comment':
+                        if (commentInput && commentInput.value.trim()) {
+                            const newComment = {
+                                id: `comment${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                                userId: loggedInUser.id,
+                                username: loggedInUser.username,
+                                text: commentInput.value.trim(),
+                                timestamp: new Date().toISOString(),
+                                likes: [] // New comments start with no likes
+                            };
+                            post.comments.push(newComment);
+
+                            // Append comment to main feed's full comment list (if visible)
+                            const mainCommentList = document.querySelector(`.post[data-post-id="${postId}"] .comments-section .comment-list`);
+                            if (mainCommentList && mainCommentList.style.display !== 'none') {
+                                // Add at the beginning of the list to match desired UI (most recent first)
+                                const tempDiv = document.createElement('div');
+                                tempDiv.appendChild(renderComment(newComment, postId, false));
+                                mainCommentList.insertBefore(tempDiv.firstChild, mainCommentList.firstChild);
+                                mainCommentList.scrollTop = 0; // Scroll to top to see new comment
+                            }
+
+                            // Append comment to detail modal's comment list if open
+                            const detailCommentList = postDetailContent.querySelector(`#detail-comment-list-${post.id}`);
+                            if (postDetailModal.style.display === 'flex' && detailCommentList) {
+                                // Add at the beginning of the list to match desired UI (most recent first)
+                                const tempDiv = document.createElement('div');
+                                tempDiv.appendChild(renderComment(newComment, postId, true));
+                                detailCommentList.insertBefore(tempDiv.firstChild, detailCommentList.firstChild);
+                                detailCommentList.scrollTop = 0; // Scroll to top to see new comment
+                            }
+
+                            commentInput.value = ''; // Clear input field
+                            updatePostStats();
+                            updateCommentCountsInPreview();
+                            // Re-render the comment preview section to include new comments if they become top liked
+                            const postCard = document.querySelector(`.post[data-post-id="${postId}"]`);
+                            if (postCard) {
+                                const commentsSection = postCard.querySelector('.comments-section');
+                                if (commentsSection) {
+                                    // To update the comments preview (top 3 liked comments) correctly,
+                                    // we need to re-render the entire post card.
+                                    // First, find the current card's parent to replace it.
+                                    const parent = postCard.parentNode;
+                                    const renderedCard = renderPost(post);
+                                    parent.replaceChild(renderedCard, postCard);
+
+                                    // If the full comment section was open, re-open it in the new card
+                                    if (mainCommentList && mainCommentList.style.display !== 'none') {
+                                        renderedCard.querySelector('.comment-trigger-btn').click(); // Simulate click to re-open
+                                    }
+                                }
+                            }
+
+                        } else {
+                            showMessage('评论内容不能为空。');
+                        }
+                        break;
+
+                    case 'comment_like':
+                        if (!commentId) return;
+                        const targetComment = post.comments.find(c => c.id === commentId);
+                        if (!targetComment) return;
+
+                        const isCommentLiked = targetComment.likes.includes(loggedInUser.id);
+                        if (isCommentLiked) {
+                            targetComment.likes = targetComment.likes.filter(id => id !== loggedInUser.id);
+                        } else {
+                            targetComment.likes.push(loggedInUser.id);
+                        }
+
+                        // Update all comment like buttons for this specific comment across the page
+                        document.querySelectorAll(`.comment-like-btn[data-comment-id="${commentId}"]`).forEach(btn => {
+                            btn.classList.toggle('active', targetComment.likes.includes(loggedInUser.id));
+                            btn.querySelector('i').className = targetComment.likes.includes(loggedInUser.id) ? 'fas fa-thumbs-up' : 'far fa-thumbs-up';
+                            btn.querySelector('.comment-likes-count').textContent = targetComment.likes.length;
+                        });
+
+                        // Re-render the comment preview section to update sorting if needed
+                        const postCard = document.querySelector(`.post[data-post-id="${postId}"]`);
+                        if (postCard) {
+                            const commentsSection = postCard.querySelector('.comments-section');
+                            if (commentsSection) {
+                                // To update the comments preview (top 3 liked comments) correctly,
+                                // we need to re-render the entire post card.
+                                const parent = postCard.parentNode;
+                                const wasExpanded = postCard.querySelector('.comment-list').style.display !== 'none';
+                                const renderedCard = renderPost(post);
+                                parent.replaceChild(renderedCard, postCard);
+
+                                // If full comments were open, re-open them
+                                if (wasExpanded) {
+                                    renderedCard.querySelector('.comment-trigger-btn').click(); // Simulate click to re-open
+                                }
+                            }
+                        }
+
+                        // If detail modal is open, re-render its comments
+                        if (postDetailModal.style.display === 'flex' && postDetailContent.dataset.postId === postId) {
+                             const detailCommentList = postDetailContent.querySelector(`#detail-comment-list-${postId}`);
+                             if (detailCommentList) {
+                                 // Clear and re-render all comments in detail view to reflect sorting/likes
+                                 detailCommentList.innerHTML = '';
+                                 // Sort comments by timestamp (most recent first) for display
+                                 [...post.comments].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(c => {
+                                     detailCommentList.appendChild(renderComment(c, post.id, true));
+                                 });
+                             }
+                        }
+                        break;
+
+                    case 'comment_delete':
+                        if (!commentId) return;
+                        const commentToDeleteIndex = post.comments.findIndex(c => c.id === commentId);
+
+                        if (commentToDeleteIndex > -1 && loggedInUser && post.comments[commentToDeleteIndex].userId === loggedInUser.id) {
+                            showMessage('确定要删除这条评论吗？', () => {
+                                post.comments.splice(commentToDeleteIndex, 1);
+                                saveData();
+                                showMessage('评论已删除。', () => {
+                                    updatePostStats();
+                                    updateCommentCountsInPreview();
+                                    // Re-render the entire post card to update comment preview
+                                    const postCard = document.querySelector(`.post[data-post-id="${postId}"]`);
+                                    if (postCard) {
+                                        const parent = postCard.parentNode;
+                                        const wasExpanded = postCard.querySelector('.comment-list').style.display !== 'none';
+                                        const renderedCard = renderPost(post);
+                                        parent.replaceChild(renderedCard, postCard);
+
+                                        if (wasExpanded) {
+                                            renderedCard.querySelector('.comment-trigger-btn').click();
+                                        }
+                                    }
+                                    // If detail modal is open, re-render it
+                                    if (postDetailModal.style.display === 'flex' && postDetailContent.dataset.postId === postId) {
+                                        renderPostDetail(post); // This will re-render all comments
+                                    }
+                                });
+                            });
+                        } else {
+                             showMessage('您无权删除此评论。');
+                        }
+                        break;
+                }
+                saveData();
+            }
+
+
+            /**
+             * 渲染热门动态到侧边栏
+             */
+            function renderHotPosts() {
+                const hotPosts = [...posts].sort((a, b) => b.likes.length - a.likes.length).slice(0, 5);
+                hotPostsSidebar.innerHTML = hotPosts.map((post, index) => `
+                    <div class="hot-post-item" data-post-id="${post.id}">
+                        <div class="topic-number">${index + 1}</div>
+                        <div class="topic-info">
+                            <div class="title">${post.content.substring(0, 30)}...</div>
+                            <div class="topic-stats">${post.likes.length} 点赞 · ${post.comments.length} 评论</div>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.querySelectorAll('.hot-post-item').forEach(item => {
+                    item.addEventListener('click', (event) => {
+                        const postId = event.currentTarget.dataset.postId;
+                        const targetPost = posts.find(p => p.id === postId);
+                        if (targetPost) {
+                            hideModals();
+                            renderPostDetail(targetPost);
+                            showModal('post-detail-modal');
+                        }
+                    });
+                });
+            }
+
+            /**
+             * 渲染指定用户的个人主页
+             * @param {object} user 目标用户对象
+             */
+            function renderProfile(user) {
+                currentProfileUser = user;
+                profileAvatar.src = user.avatar;
+                profileNickname.textContent = user.username;
+                profileBio.textContent = user.bio || '暂无简介。';
+
+                profileTags.innerHTML = user.interests.map(tag => `<span>#${tag}</span>`).join('');
+                if (user.interests.length === 0) {
+                    profileTags.innerHTML = '<span style="color: var(--dark); font-size: 0.85rem; background: none; padding: 0;">暂无兴趣标签</span>';
+                }
+
+                profileFollowingCount.textContent = user.following.length;
+                profileFollowersCount.textContent = user.followers.length;
+
+                profileActions.innerHTML = '';
+
+                if (loggedInUser && loggedInUser.id === user.id) {
+                    const editButton = document.createElement('button');
+                    editButton.textContent = '编辑资料';
+                    editButton.addEventListener('click', () => {
+                        editNicknameInput.value = loggedInUser.username;
+                        editBioInput.value = loggedInUser.bio || '';
+                        editInterestsInput.value = loggedInUser.interests.join(', ');
+                        editAvatarPreview.src = loggedInUser.avatar;
+                        editAvatarPreview.style.display = 'block';
+
+                        showModal('edit-profile-modal');
+                    });
+                    profileActions.appendChild(editButton);
+                } else if (loggedInUser) {
+                    const followButton = document.createElement('button');
+                    const isFollowing = loggedInUser.following.includes(user.id);
+                    followButton.textContent = isFollowing ? '取消关注' : '关注';
+                    followButton.className = isFollowing ? 'unfollow' : '';
+                    followButton.addEventListener('click', () => toggleFollow(user.id, followButton));
+                    profileActions.appendChild(followButton);
+                } else {
+                    profileActions.innerHTML = '<p style="font-size:0.9rem; color:var(--dark); text-align:center;">登录后可关注。</p>';
+                }
+
+                const userPosts = posts.filter(p => p.userId === user.id && (!p.isPrivate || (loggedInUser && p.userId === loggedInUser.id)));
+                userPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                profilePostsFeed.innerHTML = '';
+                if (userPosts.length === 0) {
+                    profilePostsFeed.innerHTML = '<p style="text-align: center; color: var(--dark); padding: 20px;">该用户暂无动态。</p>';
+                } else {
+                    userPosts.forEach(post => {
+                        profilePostsFeed.appendChild(renderPost(post));
+                    });
+                }
+            }
+
+            /**
+             * 关注/取关逻辑
+             * @param {string} targetUserId 目标用户ID
+             * @param {HTMLElement} button 关注/取关按钮元素
+             */
+            function toggleFollow(targetUserId, button) {
+                if (!loggedInUser) {
+                    showMessage('请先登录才能进行关注操作！');
+                    showModal('login-modal');
+                    return;
+                }
+
+                const targetUser = users.find(u => u.id === targetUserId);
+                if (!targetUser) return;
+
+                loggedInUser.following = loggedInUser.following || [];
+                targetUser.followers = targetUser.followers || [];
+
+                const isFollowing = loggedInUser.following.includes(targetUserId);
+
+                if (isFollowing) {
+                    loggedInUser.following = loggedInUser.following.filter(id => id !== targetUserId);
+                    targetUser.followers = targetUser.followers.filter(id => id !== loggedInUser.id);
+                    button.textContent = '关注';
+                    button.classList.remove('unfollow');
+                    showMessage(`已取消关注 ${targetUser.username}`);
+                } else {
+                    loggedInUser.following.push(targetUserId);
+                    targetUser.followers.push(loggedInUser.id);
+                    button.textContent = '取消关注';
+                    button.classList.add('unfollow');
+                    showMessage(`已关注 ${targetUser.username}`);
+                }
+                saveData();
+                // Re-render relevant parts of the UI that depend on follow status
+                if (currentProfileUser && currentProfileUser.id === targetUser.id) {
+                    renderProfile(targetUser);
+                } else if (currentProfileUser && currentProfileUser.id === loggedInUser.id) {
+                     renderProfile(loggedInUser);
+                }
+                updateNavigation();
+                // Rerender homepage to reflect changes in "Following" feed
+                currentPostPageIndex = 0;
+                postFeed.innerHTML = '';
+                loadMorePosts();
+            }
+
+            /**
+             * 渲染管理员用户列表
+             */
+            function renderAdminUserList() {
+                adminUserList.innerHTML = '';
+                users.forEach(user => {
+                    if (user.id === loggedInUser.id) return;
+
+                    const userItem = document.createElement('li');
+                    userItem.className = `user-item ${user.isBanned ? 'banned' : ''}`;
+                    userItem.innerHTML = `
+                        <div class="user-info">
+                            <span>${user.username} (ID: ${user.id})</span>
+                            ${user.isBanned ? '<span style="color: var(--danger); margin-left: 10px;">[已封禁]</span>' : ''}
+                        </div>
+                        <div class="user-actions">
+                            ${user.isBanned ?
+                                `<button class="unban-btn" data-user-id="${user.id}">解封</button>` :
+                                `<button class="ban-btn" data-user-id="${user.id}">封禁</button>`
+                            }
+                            <button class="reset-btn" data-user-id="${user.id}">重置资料</button>
+                        </div>
+                    `;
+                    adminUserList.appendChild(userItem);
+                });
+
+                adminUserList.addEventListener('click', (event) => {
+                    const target = event.target;
+                    const userId = target.dataset.userId;
+                    const targetUser = users.find(u => u.id === userId);
+
+                    if (!targetUser) return;
+
+                    if (target.classList.contains('ban-btn')) {
+                        targetUser.isBanned = true;
+                        showMessage(`用户 ${targetUser.username} 已被封禁。`, renderAdminUserList);
+                    } else if (target.classList.contains('unban-btn')) {
+                        targetUser.isBanned = false;
+                        showMessage(`用户 ${targetUser.username} 已被解封。`, renderAdminUserList);
+                    } else if (target.classList.contains('reset-btn')) {
+                        targetUser.bio = '';
+                        targetUser.interests = [];
+                        targetUser.avatar = 'https://placehold.co/50x50/CCCCCC/000000?text=User';
+                        targetUser.password = '123456';
+                        showMessage(`用户 ${targetUser.username} 的资料已被重置，密码已重置为 "123456" 。`, () => {
+                            if (loggedInUser && loggedInUser.id === userId) {
+                                loggedInUser = null;
+                                localStorage.removeItem('loggedInUser');
+                                updateNavigation();
+                                showPage('home');
+                            }
+                            renderAdminUserList();
+                            if (currentProfileUser && currentProfileUser.id === userId) {
+                                renderProfile(targetUser);
+                            }
+                        });
+                    }
+                    saveData();
+                });
+            }
+
+
+            // --- Event Listeners ---
+
+            // Navigation bar click events
+            navHome.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('home');
+            });
+            navHomeLogo.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('home');
+            });
+            navPublish.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (loggedInUser) {
+                    currentEditingPostId = null;
+                    postModalTitle.textContent = '发布动态';
+                    postSubmitButton.textContent = '发布';
+                    postTextarea.value = '';
+                    postImageUrl.value = '';
+                    postImageFile.value = '';
+                    imagePreviewsWrapper.innerHTML = '';
+                    imagePreviewContainer.classList.remove('show');
+                    visibilityPublicBtn.classList.add('active');
+                    visibilityFriendsBtn.classList.remove('active');
+                    currentVisibility = 'public';
+                    showModal('post-modal');
+                    setupImagePreviewRemove();
+                } else {
+                    showMessage('请先登录才能发布动态。');
+                    showModal('login-modal');
+                }
+            });
+            newPostBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (loggedInUser) {
+                    currentEditingPostId = null;
+                    postModalTitle.textContent = '发布动态';
+                    postSubmitButton.textContent = '发布';
+                    postTextarea.value = '';
+                    postImageUrl.value = '';
+                    postImageFile.value = '';
+                    imagePreviewsWrapper.innerHTML = '';
+                    imagePreviewContainer.classList.remove('show');
+                    visibilityPublicBtn.classList.add('active');
+                    visibilityFriendsBtn.classList.remove('active');
+                    currentVisibility = 'public';
+                    showModal('post-modal');
+                    setupImagePreviewRemove();
+                } else {
+                    showMessage('请先登录才能发布动态。');
+                    showModal('login-modal');
+                }
+            });
+            navProfile.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (loggedInUser) {
+                    showPage('profile');
+                    renderProfile(loggedInUser);
+                } else {
+                    showMessage('请先登录才能查看个人主页。');
+                    showModal('login-modal');
+                }
+            });
+            navAdmin.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('admin');
+            });
+            navPm.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('pm');
+            });
+            navLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                showModal('login-modal');
+            });
+            navRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                showModal('register-modal');
+            });
+            navLogout.addEventListener('click', (e) => {
+                e.preventDefault();
+                loggedInUser = null;
+                localStorage.removeItem('loggedInUser');
+                showMessage('您已退出登录。', () => {
+                    updateNavigation();
+                    showPage('home');
+                });
+            });
+
+            // Modal close buttons
+            closeButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const modalId = event.target.dataset.modalId;
+                    document.getElementById(modalId).style.display = 'none';
+                });
+            });
+            window.addEventListener('click', (event) => {
+                if (event.target === loginModal) { hideModals(); }
+                if (event.target === registerModal) { hideModals(); }
+                if (event.target === postModal) { hideModals(); }
+                if (event.target === editProfileModal) { hideModals(); }
+                if (event.target === forgotPasswordModal) { hideModals(); }
+                if (event.target === postDetailModal) { hideModals(); }
+                document.querySelectorAll('.post-menu-dropdown').forEach(menu => {
+                    if (event.target !== menu && !menu.contains(event.target) && !event.target.closest('.post-menu-btn')) {
+                        menu.classList.remove('show');
+                    }
+                });
+            });
+
+            // Login form submission
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const studentIdOrUsername = loginStudentIdInput.value.trim();
+                const password = loginPasswordInput.value;
+
+                const user = users.find(u => (u.id === studentIdOrUsername || u.username === studentIdOrUsername) && u.password === password);
+
+                if (user) {
+                    if (user.isBanned) {
+                        showMessage('您的账号已被封禁，请联系管理员。');
+                        return;
+                    }
+                    loggedInUser = user;
+                    if (rememberMeCheckbox.checked) {
+                        localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+                    } else {
+                        localStorage.removeItem('loggedInUser');
+                    }
+                    showMessage(`欢迎，${loggedInUser.username}！`, () => {
+                        hideModals();
+                        updateNavigation();
+                        showPage('home');
+                    });
+                } else {
+                    showMessage('学号/用户名或密码不正确。');
+                }
+            });
+
+            // Password visibility toggles
+            toggleLoginPassword.addEventListener('click', () => {
+                if (loginPasswordInput.type === 'password') {
+                    loginPasswordInput.type = 'text';
+                    toggleLoginPassword.innerHTML = '<i class="fas fa-eye"></i>';
+                } else {
+                    loginPasswordInput.type = 'password';
+                    toggleLoginPassword.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                }
+            });
+            toggleRegisterPassword.addEventListener('click', () => {
+                if (regPasswordInput.type === 'password') {
+                    regPasswordInput.type = 'text';
+                    toggleRegisterPassword.innerHTML = '<i class="fas fa-eye"></i>';
+                } else {
+                    regPasswordInput.type = 'password';
+                    toggleRegisterPassword.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                }
+            });
+            toggleForgotPassword.addEventListener('click', () => {
+                if (forgotNewPasswordInput.type === 'password') {
+                    forgotNewPasswordInput.type = 'text';
+                    toggleForgotPassword.innerHTML = '<i class="fas fa-eye"></i>';
+                } else {
+                    forgotNewPasswordInput.type = 'password';
+                    toggleForgotPassword.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                }
+            });
+
+            // Forgot password link (opens forgot password modal)
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                hideModals();
+                forgotStudentIdInput.value = '';
+                forgotNewPasswordInput.value = '';
+                showModal('forgot-password-modal');
+            });
+
+            // Forgot password form submission
+            forgotPasswordForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const studentIdOrUsername = forgotStudentIdInput.value.trim();
+                const newPassword = forgotNewPasswordInput.value;
+
+                const user = users.find(u => (u.id === studentIdOrUsername || u.username === studentIdOrUsername));
+
+                if (!forgotNewPasswordInput.checkValidity()) {
+                    showMessage('新密码不符合要求。密码需至少8位，包含大小写字母、数字和特殊符号。');
+                    return;
+                }
+
+                if (user) {
+                    user.password = newPassword;
+                    saveData();
+                    showMessage(`用户 ${user.username} 的密码已成功重置！`, () => {
+                        hideModals();
+                        loginStudentIdInput.value = user.id;
+                        loginPasswordInput.value = newPassword;
+                    });
+                } else {
+                    showMessage('未找到该用户，请检查学号/用户名是否正确。');
+                }
+            });
+
+            // Registration form submission
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                if (!regStudentIdInput.checkValidity()) {
+                    showMessage('请检查学号格式，需为10位数字。');
+                    return;
+                }
+
+                const password = regPasswordInput.value;
+                const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/;
+
+                if (!passwordPattern.test(password)) {
+                    showMessage('密码需至少8位，包含大小写字母、数字和特殊符号。');
+                    return;
+                }
+
+                if (users.some(u => u.id === regStudentIdInput.value)) {
+                    showMessage('该学号已被注册！');
+                    return;
+                }
+                if (users.some(u => u.username === regNicknameInput.value.trim())) {
+                    showMessage('该昵称已被使用！');
+                    return;
+                }
+
+                const newAvatar = regAvatarPreview.src && regAvatarPreview.style.display !== 'none' ? regAvatarPreview.src : 'https://placehold.co/50x50/CCCCCC/000000?text=User';
+
+                const newUser = {
+                    id: regStudentIdInput.value.trim(),
+                    username: regNicknameInput.value.trim(),
+                    password: regPasswordInput.value,
+                    avatar: newAvatar,
+                    bio: regBioInput.value.trim() || '',
+                    interests: regInterestsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
+                    followers: [],
+                    following: [],
+                    isAdmin: false,
+                    isBanned: false
+                };
+
+                users.push(newUser);
+                showMessage('注册成功！请登录。', () => {
+                    hideModals();
+                    loginStudentIdInput.value = newUser.id;
+                    loginPasswordInput.value = newUser.password;
+                });
+                saveData();
+            });
+
+            // Register avatar preview
+            regAvatarInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        regAvatarPreview.src = event.target.result;
+                        regAvatarPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    regAvatarPreview.src = '#';
+                    regAvatarPreview.style.display = 'none';
+                }
+            });
+
+            // Post/Edit form submission
+            postForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!loggedInUser) {
+                    showMessage('请先登录才能发布动态。');
+                    return;
+                }
+
+                const content = postTextarea.value.trim();
+                const fileImages = postImageFile.files;
+                const imageUrl = postImageUrl.value.trim();
+                let postImages = [];
+
+                if (fileImages.length > 0) {
+                    // Prioritize file uploads
+                    for (let i = 0; i < fileImages.length; i++) {
+                        postImages.push(URL.createObjectURL(fileImages[i]));
+                    }
+                } else if (imageUrl) {
+                    // Use image URL if provided and no files
+                    postImages.push(imageUrl);
+                } else if (currentEditingPostId) {
+                    // If editing and no new files/url, retain existing images
+                    const existingPost = posts.find(p => p.id === currentEditingPostId);
+                    if (existingPost) {
+                        postImages = [...(existingPost.images || [])];
+                    }
+                }
+
+                if (!content && postImages.length === 0) {
+                    showMessage('动态内容或图片至少需要一项。');
+                    return;
+                }
+
+                const isPrivatePost = currentVisibility === 'friends';
+
+                if (currentEditingPostId) {
+                    const postToUpdate = posts.find(p => p.id === currentEditingPostId);
+                    if (postToUpdate) {
+                        postToUpdate.content = content;
+                        postToUpdate.images = postImages;
+                        postToUpdate.isPrivate = isPrivatePost;
+                        showMessage('动态更新成功！', () => {
+                            hideModals();
+                            showPage('home'); // Reload home to update feeds
+                            renderProfile(loggedInUser);
+                        });
+                    }
+                } else {
+                    const newPost = {
+                        id: `post${Date.now()}`,
+                        userId: loggedInUser.id,
+                        username: loggedInUser.username,
+                        avatar: loggedInUser.avatar,
+                        content: content,
+                        images: postImages,
+                        tags: [], // Tags not implemented in UI for simplicity
+                        timestamp: new Date().toISOString(),
+                        likes: [],
+                        comments: [],
+                        shares: 0,
+                        isPrivate: isPrivatePost
+                    };
+                    posts.unshift(newPost);
+                    showMessage('动态发布成功！', () => {
+                        hideModals();
+                        showPage('home'); // Reload home to update feeds
+                    });
+                }
+                saveData();
+            });
+
+            // Post/Edit image upload trigger
+            addPhotoBtn.addEventListener('click', () => {
+                postImageFile.click();
+            });
+
+            // Post/Edit image file preview
+            postImageFile.addEventListener('change', (e) => {
+                imagePreviewsWrapper.innerHTML = '';
+                const files = e.target.files;
+                if (files && files.length > 0) {
+                    postImageUrl.value = ''; // Clear URL input if file is chosen
+                    Array.from(files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const img = document.createElement('img');
+                            img.src = event.target.result;
+                            img.className = 'preview-image';
+                            imagePreviewsWrapper.appendChild(img);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    imagePreviewContainer.classList.add('show');
+                } else {
+                    if (!postImageUrl.value.trim()) {
+                        imagePreviewContainer.classList.remove('show');
+                    }
+                }
+                setupImagePreviewRemove();
+            });
+
+            // Post/Edit image URL preview
+            postImageUrl.addEventListener('input', () => {
+                imagePreviewsWrapper.innerHTML = '';
+                postImageFile.value = '';
+                const url = postImageUrl.value.trim();
+                if (url) {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.className = 'preview-image';
+                    img.onerror = () => { img.src = 'https://placehold.co/120x120/CCCCCC/000000?text=图片加载失败'; };
+                    imagePreviewsWrapper.appendChild(img);
+                    imagePreviewContainer.classList.add('show');
+                } else {
+                    imagePreviewContainer.classList.remove('show');
+                }
+                setupImagePreviewRemove();
+            });
+
+            // Remove image from preview for post modal (dynamic button)
+            function setupImagePreviewRemove() {
+                let removeBtn = document.getElementById('remove-image-btn');
+                if (removeBtn) {
+                    removeBtn.removeEventListener('click', handleRemoveImage);
+                    removeBtn.remove();
+                }
+
+                if (imagePreviewsWrapper.children.length > 0) {
+                    removeBtn = document.createElement('div');
+                    removeBtn.className = 'remove-image';
+                    removeBtn.id = 'remove-image-btn';
+                    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    imagePreviewContainer.appendChild(removeBtn);
+                    removeBtn.addEventListener('click', handleRemoveImage);
+                }
+            }
+
+            function handleRemoveImage() {
+                imagePreviewsWrapper.innerHTML = '';
+                imagePreviewContainer.classList.remove('show');
+                postImageFile.value = '';
+                postImageUrl.value = '';
+                setupImagePreviewRemove();
+            }
+            setupImagePreviewRemove();
+
+            // Visibility options for posts
+            visibilityPublicBtn.addEventListener('click', () => {
+                visibilityPublicBtn.classList.add('active');
+                visibilityFriendsBtn.classList.remove('active');
+                currentVisibility = 'public';
+            });
+            visibilityFriendsBtn.addEventListener('click', () => {
+                if (!loggedInUser) {
+                    showMessage('请先登录才能设置仅好友可见。');
+                    showModal('login-modal');
+                    return;
+                }
+                visibilityFriendsBtn.classList.add('active');
+                visibilityPublicBtn.classList.remove('active');
+                currentVisibility = 'friends';
+            });
+
+            // Edit profile form submission
+            editProfileForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (!loggedInUser) return;
+
+                const newNickname = editNicknameInput.value.trim();
+                const newBio = editBioInput.value.trim();
+                const newInterests = editInterestsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+
+                const nicknameExists = users.some(u => u.username === newNickname && u.id !== loggedInUser.id);
+                if (nicknameExists) {
+                    showMessage('该昵称已被其他用户使用，请选择其他昵称。');
+                    return;
+                }
+
+                loggedInUser.username = newNickname;
+                loggedInUser.bio = newBio;
+                loggedInUser.interests = newInterests;
+
+                const avatarFile = editAvatarInput.files[0];
+                if (avatarFile) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        loggedInUser.avatar = event.target.result;
+                        // Update avatar in existing posts by this user
+                        posts.forEach(post => {
+                            if (post.userId === loggedInUser.id) {
+                                post.avatar = loggedInUser.avatar;
+                            }
+                        });
+                        saveData();
+                        showMessage('个人资料更新成功！', () => {
+                            hideModals();
+                            updateNavigation();
+                            renderProfile(loggedInUser);
+                            showPage('home'); // Reload home to update feeds
+                        });
+                    };
+                    reader.readAsDataURL(avatarFile);
+                } else {
+                    // If no new avatar file, just update text info and re-render
+                    posts.forEach(post => {
+                        if (post.userId === loggedInUser.id) {
+                            post.avatar = loggedInUser.avatar;
+                        }
+                    });
+                    saveData();
+                    showMessage('个人资料更新成功！', () => {
+                        hideModals();
+                        updateNavigation();
+                        renderProfile(loggedInUser);
+                        showPage('home'); // Reload home to update feeds
+                    });
+                }
+            });
+
+            // Edit profile avatar preview
+            editAvatarInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        editAvatarPreview.src = event.target.result;
+                        editAvatarPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    editAvatarPreview.src = '#';
+                    editAvatarPreview.style.display = 'none';
+                }
+            });
+
+            // Event delegation for post card actions (likes, comments, delete, menu, edit, view detail)
+            postFeed.addEventListener('click', (event) => {
+                const target = event.target;
+                const postId = target.closest('[data-post-id]')?.dataset.postId;
+                const post = postId ? posts.find(p => p.id === postId) : null;
+
+                if (!post) return;
+
+                // Open post detail modal when clicking content area or "view all comments" link
+                if (target.closest('.post-content-area') || target.closest('.view-all-comments-link')) {
+                    hideModals();
+                    renderPostDetail(post);
+                    showModal('post-detail-modal');
+                    return;
+                }
+
+                // Toggle post menu dropdown
+                if (target.closest('.post-menu-btn')) {
+                    const menu = target.closest('.post-menu').querySelector('.post-menu-dropdown');
+                    document.querySelectorAll('.post-menu-dropdown').forEach(m => {
+                        if (m !== menu) m.classList.remove('show');
+                    });
+                    menu.classList.toggle('show');
+                    event.stopPropagation();
+                    return;
+                }
+
+                // Like, Share, Comment from main feed
+                if (target.closest('.like-btn')) {
+                    handlePostAction(postId, 'like');
+                } else if (target.closest('.share-btn')) {
+                    handlePostAction(postId, 'share');
+                } else if (target.closest('.submit-comment-btn')) {
+                    const commentInput = target.closest('.add-comment-area')?.querySelector('.comment-input');
+                    handlePostAction(postId, 'comment', commentInput);
+                } else if (target.closest('.comment-trigger-btn')) { // Toggle full comment list and input area
+                    const commentsSection = target.closest('.post').querySelector('.comments-section');
+                    const commentList = commentsSection.querySelector('.comment-list');
+                    const addCommentArea = commentsSection.querySelector('.add-comment-area');
+                    const commentsPreview = commentsSection.querySelector('.comments-preview');
+
+
+                    if (commentList.style.display === 'none') {
+                        commentList.style.display = 'block';
+                        // Add at the beginning of the list to match desired UI (most recent first)
+                        if (loggedInUser) {
+                            addCommentArea.style.display = 'flex';
+                            commentsSection.insertBefore(addCommentArea, commentsSection.querySelector('.comments-preview') || commentsSection.querySelector('.comment-list'));
+                        }
+
+                        // Render all comments when expanded
+                        commentList.innerHTML = '';
+                        // Always sort comments by timestamp (most recent first) for consistency when expanded
+                        [...post.comments].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(comment => {
+                            commentList.appendChild(renderComment(comment, post.id, false));
+                        });
+                        commentList.scrollTop = 0; // Scroll to top to see new comment input
+                    } else {
+                        commentList.style.display = 'none';
+                        addCommentArea.style.display = 'none';
+                        // Move add comment area back to its original position within the comments-section
+                        commentsSection.appendChild(addCommentArea);
+                    }
+                }
+
+                // Delete post from menu dropdown
+                if (target.closest('.delete-post-from-menu')) {
+                    if (!loggedInUser || loggedInUser.id !== post.userId) {
+                        showMessage('您无权删除此动态。');
+                        return;
+                    }
+
+                    showMessage('确定要删除这条动态吗？', () => {
+                        posts = posts.filter(p => p.id !== postId);
+                        target.closest('.post').remove();
+                        saveData();
+                        showMessage('动态已删除。');
+                        if (currentPage === 'home') {
+                            currentPostPageIndex = 0;
+                            postFeed.innerHTML = '';
+                            loadMorePosts();
+                        }
+                        if (currentProfileUser && currentProfileUser.id === loggedInUser.id) {
+                            renderProfile(loggedInUser);
+                        }
+                    });
+                }
+
+                // Edit post from menu dropdown
+                if (target.closest('.edit-post-from-menu')) {
+                    if (!loggedInUser || loggedInUser.id !== post.userId) {
+                        showMessage('您无权编辑此动态。');
+                        return;
+                    }
+                    currentEditingPostId = postId;
+                    postModalTitle.textContent = '编辑动态';
+                    postSubmitButton.textContent = '保存更改';
+                    postTextarea.value = post.content;
+
+                    imagePreviewsWrapper.innerHTML = '';
+                    postImageFile.value = '';
+                    postImageUrl.value = '';
+
+                    if (post.images && post.images.length > 0) {
+                        if (post.images[0] && post.images[0].startsWith('http')) {
+                            postImageUrl.value = post.images[0];
+                        }
+                        post.images.forEach(imgSrc => {
+                            const img = document.createElement('img');
+                            img.src = imgSrc;
+                            img.className = 'preview-image';
+                            imagePreviewsWrapper.appendChild(img);
+                        });
+                        imagePreviewContainer.classList.add('show');
+                    } else {
+                        imagePreviewContainer.classList.remove('show');
+                    }
+
+                    if (post.isPrivate) {
+                        visibilityFriendsBtn.classList.add('active');
+                        visibilityPublicBtn.classList.remove('active');
+                        currentVisibility = 'friends';
+                    } else {
+                        visibilityPublicBtn.classList.add('active');
+                        visibilityFriendsBtn.classList.remove('active');
+                        currentVisibility = 'public';
+                    }
+
+                    setupImagePreviewRemove();
+                    showModal('post-modal');
+                }
+
+                // Click avatar/username to go to user profile
+                if (target.closest('.post-header img') || target.closest('.post-user-info .name')) {
+                    const userIdToView = target.dataset.userId || target.closest('[data-user-id]')?.dataset.userId;
+                    const userToView = users.find(u => u.id === userIdToView);
+                    if (userToView) {
+                        showPage('profile');
+                        renderProfile(userToView);
+                    }
+                }
+            });
+
+
+            // Infinite scroll (Intersection Observer)
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !isLoadingPosts) {
+                    loadMorePosts();
+                }
+            }, {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            });
+            observer.observe(loadMoreSentinel);
+
+            // Dynamic feed view switching
+            switchAllPostsBtn.addEventListener('click', () => {
+                if (currentFeedView !== 'all') {
+                    currentFeedView = 'all';
+                    switchAllPostsBtn.classList.add('active');
+                    switchFollowingPostsBtn.classList.remove('active');
+                    currentPostPageIndex = 0;
+                    postFeed.innerHTML = '';
+                    loadMorePosts();
+                }
+            });
+
+            switchFollowingPostsBtn.addEventListener('click', () => {
+                if (!loggedInUser) {
+                    showMessage('请先登录才能查看关注的动态。');
+                    showModal('login-modal');
+                    return;
+                }
+                if (currentFeedView !== 'following') {
+                    currentFeedView = 'following';
+                    switchFollowingPostsBtn.classList.add('active');
+                    switchAllPostsBtn.classList.remove('active');
+                    currentPostPageIndex = 0;
+                    postFeed.innerHTML = '';
+                    loadMorePosts();
+                }
+            });
+
+            // Theme toggle
+            themeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            });
+
+            // Initialize theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                body.classList.remove('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+
+            // Friend suggestions follow button functionality
+            friendSuggestionsSidebar.addEventListener('click', (event) => {
+                const followBtn = event.target.closest('.follow-btn');
+                if (followBtn) {
+                    const friendDiv = followBtn.closest('.friend');
+                    const friendName = friendDiv.querySelector('.name').textContent;
+                    const userToFollow = users.find(u => u.username === friendName);
+
+                    if (userToFollow) {
+                        toggleFollow(userToFollow.id, followBtn);
+                    } else {
+                        showMessage('找不到该用户进行关注操作。');
+                    }
+                }
+            });
+
+            // New content notification bar functionality
+            notificationBar.addEventListener('click', () => {
+                notificationBar.style.display = 'none';
+            });
+
+
+            // --- Initial Load and Setup ---
+            updateNavigation();
+            showPage('home');
+            renderHotPosts();
+
+            // Refresh hot posts periodically
+            setInterval(renderHotPosts, 60000);
+        });
+    </script>
+</body>
+</html>
