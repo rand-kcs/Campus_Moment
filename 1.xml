@@ -1,0 +1,58 @@
+<mxfile host="app.diagrams.net">
+    <diagram name="RAG系统架构" id="U1G3s8O6V4R">
+        <mxGraphModel dx="1026" dy="581" grid="1" gridSize="10">
+            <!-- 层级容器 -->
+            <mxCell id="root" value="" style="group" parent="1" vertex="1"/>
+            
+            <!-- 用户交互层 -->
+            <mxCell id="layer1" value="用户交互层 (Streamlit UI)" style="swimlane;whiteSpace=wrap;fillColor=#e3f2fd;strokeColor=#90caf9;" parent="root" vertex="1">
+                <mxGeometry x="100" y="40" width="280" height="180"/>
+            </mxCell>
+            <mxCell id="inputBox" value="提问区\n- 问题输入框\n- 答案展示区\n- 来源文档展开面板" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;" parent="layer1" vertex="1">
+                <mxGeometry x="20" y="30" width="240" height="120"/>
+            </mxCell>
+            
+            <!-- 应用逻辑层 -->
+            <mxCell id="layer2" value="应用逻辑层 (Python后端)" style="swimlane;whiteSpace=wrap;fillColor=#e8f5e9;strokeColor=#a5d6a7;" parent="root" vertex="1">
+                <mxGeometry x="80" y="260" width="600" height="220"/>
+            </mxCell>
+            <mxCell id="dataModule" value="数据采集模块\n- Web爬虫\n- 文件解析" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;" parent="layer2" vertex="1">
+                <mxGeometry x="40" y="40" width="160" height="140"/>
+            </mxCell>
+            <mxCell id="ragModule" value="RAG引擎模块\n- 查询向量化\n- 语义检索\n- 答案生成" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;" parent="layer2" vertex="1">
+                <mxGeometry x="240" y="40" width="160" height="140"/>
+            </mxCell>
+            <mxCell id="kbModule" value="知识库管理模块\n- 文本分块\n- 向量化\n- 持久化存储" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;" parent="layer2" vertex="1">
+                <mxGeometry x="400" y="40" width="160" height="140"/>
+            </mxCell>
+            
+            <!-- 数据存储层 -->
+            <mxCell id="layer3" value="数据存储层 (ChromaDB)" style="swimlane;whiteSpace=wrap;fillColor=#f3e5f5;strokeColor=#ce93d8;" parent="root" vertex="1">
+                <mxGeometry x="200" y="520" width="320" height="120"/>
+            </mxCell>
+            <mxCell id="vectorIndex" value="向量索引\n- 文本块向量\n- 元数据(source, content)" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;" parent="layer3" vertex="1">
+                <mxGeometry x="60" y="30" width="200" height="60"/>
+            </mxCell>
+            
+            <!-- 连接线 -->
+            <mxCell id="conn1" value="" style="endArrow=classic;html=1;strokeWidth=2;" parent="root" edge="1">
+                <mxGeometry width="50" height="50" relative="1" as="geometry">
+                    <mxPoint x="240" y="220" as="sourcePoint"/>
+                    <mxPoint x="240" y="260" as="targetPoint"/>
+                </mxGeometry>
+            </mxCell>
+            <mxCell id="conn2" value="" style="endArrow=classic;html=1;strokeWidth=2;" parent="root" edge="1">
+                <mxGeometry width="50" height="50" relative="1" as="geometry">
+                    <mxPoint x="240" y="480" as="sourcePoint"/>
+                    <mxPoint x="240" y="520" as="targetPoint"/>
+                </mxGeometry>
+            </mxCell>
+            <mxCell id="conn3" value="调用" style="endArrow=classic;html=1;strokeWidth=2;dashed=1;" parent="root" edge="1">
+                <mxGeometry width="50" height="50" relative="1" as="geometry">
+                    <mxPoint x="400" y="180" as="sourcePoint"/>
+                    <mxPoint x="400" y="300" as="targetPoint"/>
+                </mxGeometry>
+            </mxCell>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
